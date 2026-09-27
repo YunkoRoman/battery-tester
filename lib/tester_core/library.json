@@ -1,0 +1,7 @@
+{
+  "name": "tester_core",
+  "version": "0.1.0",
+  "description": "Hardware-free logic of the 4-channel 18650 tester",
+  "frameworks": "*",
+  "platforms": "*"
+}
