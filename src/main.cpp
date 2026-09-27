@@ -8,6 +8,7 @@
 #include "channel.h"
 #include "display.h"
 #include "measure.h"
+#include "power.h"
 #include "service.h"
 #include "settings.h"
 #include "ui_model.h"
@@ -19,6 +20,7 @@ tc::ChannelSettings settings[tc::kChannels];
 tc::Measurement meas[tc::kChannels];
 tc::UiState ui;
 tc::Button buttons[3];
+tc::PowerMonitor power;
 bool powerOk = false;
 float busV = 0.0f;
 uint32_t lastTickMs = 0;
@@ -69,7 +71,7 @@ void logChannel(uint8_t c) {
 
 void tick() {
     busV = io::busVolts();
-    powerOk = busV >= tc::kBusOkVolts;
+    powerOk = power.update(busV);
     io::measureAll(meas, powerOk);
     if (ui.screen == tc::Screen::Service) {
         serviceOutputs();

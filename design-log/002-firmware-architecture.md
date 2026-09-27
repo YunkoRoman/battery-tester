@@ -19,6 +19,8 @@ Structure the firmware so the decision logic (cycles, bad-cell rules, UI navigat
 - **Q7 — Settings persistence?** EEPROM blob: magic 0xB7, version 1, 4 × {current, cutoff, mode}, crc8; blank / corrupt / out-of-range ⇒ defaults.
 - **Q8 — Extra faults beyond 001?** `NTC?` (sensor open/short while running) and `NOI` (current set but not flowing with power present — wiring / MOSFET fault).
 
+- **Q9 — Final review fixes?** (1) START refused when the cell is ≥ 40 °C (HOT) or its NTC is missing (NTC?) — the plan.html FULL-cycle precheck. (2) Service mode has its own guard (`tc::serviceOutputs`): LOAD drops below 2.8 V or above 55 °C, RELAY drops above 45 °C; a missing NTC is allowed so stages 4–5 can be checked before stage 6. (3) NO POWER with hysteresis (`tc::PowerMonitor`): pause below 4.5 V at once, resume only after 3 consecutive samples ≥ 4.7 V — a bus sagging under charger load no longer toggles relays every second. HOT > 55 °C applies to every running non-charge stage (rest and Ri test too), stricter than plan.html.
+
 ## Design
 
 - `lib/tester_core`: `measure` (ADC → V / A / °C / bus), `calc` (PWM duty for a current, Ri, Nanit Li-Po %), `button`, `settings` (+ blob), `channel` (state machine), `ui_model` (screens + service), `view_text` (26-char display lines, integer formatting — AVR printf has no `%f`).
