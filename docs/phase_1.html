@@ -1,0 +1,418 @@
+<title>Фаза 1 · живлення</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --paper:#f4efe4;
+    --paper-raised:#faf6ec;
+    --ink:#2a251d;
+    --ink-soft:#5a5347;
+    --rule:#d8cdb6;
+    --rule-strong:#b7a98a;
+    --power:#a3211f;
+    --gnd:#2a251d;
+    --gate:#c1631f;
+    --sense:#1f6e6b;
+    --tag-bg:#ece2c9;
+    --code-bg:#eee5cf;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1c1a15;
+      --paper-raised:#242019;
+      --ink:#f1ead9;
+      --ink-soft:#b6ab93;
+      --rule:#4a4334;
+      --rule-strong:#6b6146;
+      --power:#e2695f;
+      --gnd:#f1ead9;
+      --gate:#e8a85e;
+      --sense:#6bc2bd;
+      --tag-bg:#332c1f;
+      --code-bg:#2b2519;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1c1a15;
+    --paper-raised:#242019;
+    --ink:#f1ead9;
+    --ink-soft:#b6ab93;
+    --rule:#4a4334;
+    --rule-strong:#6b6146;
+    --power:#e2695f;
+    --gnd:#f1ead9;
+    --gate:#e8a85e;
+    --sense:#6bc2bd;
+    --tag-bg:#332c1f;
+    --code-bg:#2b2519;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Archivo',system-ui,sans-serif;
+    padding-inline:20px;
+    padding-block:48px;
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-attachment:local;
+  }
+  .sheet{
+    max-width:920px;
+    margin-inline:auto;
+    background:var(--paper-raised);
+    border:1px solid var(--rule-strong);
+    box-shadow:0 1px 0 var(--rule-strong);
+  }
+  header{
+    padding:28px 32px 22px;
+    border-bottom:2px solid var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .title-block h1{
+    margin:0;
+    font-size:clamp(1.5rem, 3vw, 2.1rem);
+    font-weight:800;
+    letter-spacing:-0.01em;
+    text-wrap:balance;
+  }
+  .title-block p{
+    margin:4px 0 0;
+    color:var(--ink-soft);
+    font-size:0.95rem;
+    max-width:60ch;
+  }
+  .drawing-no{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:var(--ink-soft);
+    text-align:right;
+    line-height:1.6;
+  }
+  .drawing-no b{ color:var(--ink); font-weight:600; }
+
+  main{ padding:28px 32px 36px; }
+
+  section{ margin-block-end:40px; }
+  section:last-child{ margin-block-end:0; }
+
+  h2{
+    font-size:0.78rem;
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--rule);
+  }
+
+  figure{ margin:0; }
+  .schem-frame{
+    background:var(--paper);
+    border:1px solid var(--rule-strong);
+    padding:12px;
+  }
+  svg{ display:block; width:100%; height:auto; color:var(--ink); }
+
+  .schem-frame{ overflow-x:auto; }
+  svg.schem{ min-width:620px; }
+  svg.schem text{ font-family:'JetBrains Mono',monospace; font-size:13px; fill:var(--ink); }
+  svg.schem .lbl{ fill:var(--ink-soft); font-size:12px; }
+  svg.schem .w{ stroke:currentColor; stroke-width:2; fill:none; }
+  svg.schem .wp{ stroke:var(--power); stroke-width:2; fill:none; }
+  svg.schem .ws{ stroke:var(--gate); stroke-width:2; fill:none; }
+  svg.schem .part{ fill:var(--paper-raised); stroke:currentColor; stroke-width:2; }
+  svg.schem .dot{ fill:currentColor; }
+  svg.schem .dotp{ fill:var(--power); }
+  svg.schem .dots{ fill:var(--gate); }
+
+  .to220{ display:grid; grid-template-columns:200px 1fr; gap:24px; align-items:center; }
+  svg.to220-svg{ max-width:200px; }
+  svg.to220-svg text{ font-family:'JetBrains Mono',monospace; fill:var(--ink); }
+  svg.to220-svg .t-sm{ font-size:11px; fill:var(--ink-soft); }
+  svg.to220-svg .t-part{ font-size:14px; font-weight:700; }
+  svg.to220-svg .t-pin{ font-size:16px; font-weight:700; }
+  @media (max-width:640px){ .to220{ grid-template-columns:1fr; } }
+  figcaption{
+    margin-top:10px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    max-width:70ch;
+  }
+
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 22px;
+    margin-top:14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .legend i{ width:18px; height:3px; display:inline-block; border-radius:1px; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.88rem;
+  }
+  caption{ text-align:left; margin-bottom:8px; }
+  th, td{
+    text-align:left;
+    padding:9px 12px;
+    border-bottom:1px solid var(--rule);
+    vertical-align:top;
+  }
+  th{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+    border-bottom:1px solid var(--rule-strong);
+  }
+  td.mono, .pin{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85rem;
+  }
+  .tbl-wrap{ overflow-x:auto; }
+
+  .pinmap{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--rule-strong);
+    border:1px solid var(--rule-strong);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.82rem;
+  }
+  .pinmap > div{
+    background:var(--paper-raised);
+    padding:12px 14px;
+  }
+  .pinmap .head{
+    background:var(--tag-bg);
+    font-size:0.7rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  .pinmap .port{ font-weight:700; }
+  .pinmap .gate{ color:var(--gate); }
+  .pinmap .sense{ color:var(--sense); }
+
+  .checklist{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .checklist li{
+    display:flex; gap:12px; align-items:flex-start;
+    font-size:0.92rem; line-height:1.5;
+  }
+  .checklist .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    color:var(--paper-raised);
+    background:var(--ink);
+    width:22px; height:22px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+
+  .warn{
+    margin-top:16px;
+    padding:12px 14px;
+    background:var(--tag-bg);
+    border-left:3px solid var(--power);
+    font-size:0.85rem;
+    line-height:1.5;
+  }
+  .warn b{ color:var(--power); }
+
+  code{
+    font-family:'JetBrains Mono',monospace;
+    background:var(--code-bg);
+    padding:0.1em 0.4em;
+    border-radius:3px;
+    font-size:0.92em;
+  }
+
+  footer{
+    padding:16px 32px 26px;
+    border-top:1px solid var(--rule);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width:640px){
+    .pinmap{ grid-template-columns:1fr; }
+    header{ flex-direction:column; align-items:flex-start; }
+    .drawing-no{ text-align:left; }
+  }
+
+  .parts, .check{ margin:14px 0 0; font-size:0.9rem; line-height:1.5; max-width:74ch; }
+  .check{ padding:10px 14px; background:var(--code-bg); border-left:3px solid var(--sense); }
+  .checklist{ margin-top:14px; }
+  a{ color:var(--sense); }
+
+  .screens{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+  .screen svg{ max-width:320px; border-radius:6px; border:6px solid #1a1d1f; }
+  .screen svg text{ font-family:'JetBrains Mono',monospace; }
+  .screen figcaption{ margin-top:6px; }
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="gnd"><path d="M0 0 V6 M-10 6 H10 M-6 10 H6 M-2 14 H2" stroke="currentColor" stroke-width="2" fill="none"/></g>
+  </defs>
+</svg>
+
+<div class="sheet">
+  <header>
+    <div class="title-block">
+      <h1>Фаза 1 — живлення і шини</h1>
+      <p>Спаяти етап 1, залити прошивку гілки <code>phase_1</code>, перевірити екран. Інші кола (канали, кнопки, вентилятор) ще не підключені — прошивка тримає всі їхні виходи вимкненими.</p>
+    </div>
+    <div class="drawing-no">
+      ГІЛКА <b>phase_1</b><br>
+      ЕТАП <b>1 з 9</b><br>
+      ПЛАТА <b>Nanit Pro v3.1</b>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Схема</h2>
+      <figure>
+        <div class="schem-frame">
+          <svg class="schem" viewBox="0 0 760 230" role="img" aria-label="Блок 5V через вимикач і запобіжник 5A на шину +5V; GND шина; USB-кабель від шин до Nanit">
+            <rect x="20" y="60" width="110" height="110" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
+            <text x="75" y="110" text-anchor="middle" style="font-weight:600">Блок</text>
+            <text x="75" y="128" text-anchor="middle" class="lbl">5V · 6A</text>
+            <text x="138" y="74" style="fill:var(--power);font-weight:700">+</text>
+            <text x="138" y="154" style="font-weight:700">−</text>
+            <path class="wp" d="M130 80 H170" stroke-width="3"/>
+            <circle class="dotp" cx="170" cy="80" r="3.5"/>
+            <path d="M170 80 L198 67" stroke="var(--power)" stroke-width="2"/>
+            <circle class="dotp" cx="202" cy="80" r="3.5"/>
+            <text x="186" y="55" text-anchor="middle" class="lbl">вимикач</text>
+            <path class="wp" d="M202 80 H220"/>
+            <rect class="part" x="220" y="72" width="36" height="16" rx="2"/>
+            <text x="238" y="106" text-anchor="middle" class="lbl">5A</text>
+            <path d="M256 80 H720" stroke="var(--power)" stroke-width="4"/>
+            <text x="300" y="68" style="fill:var(--power);font-weight:600">+5V шина</text>
+            <path d="M130 160 H720" stroke="currentColor" stroke-width="4"/>
+            <text x="300" y="150" style="font-weight:600">GND шина</text>
+            <text x="170" y="192" class="lbl">далі від шин: реле (7) · LM324 (4) · вентилятор (8)</text>
+            <circle class="dotp" cx="540" cy="80" r="4"/>
+            <path class="wp" d="M540 80 V88"/>
+            <rect class="part" x="531" y="88" width="18" height="26" rx="2"/>
+            <circle class="dots" cx="540" cy="120" r="3.5"/>
+            <path class="w" d="M540 114 V128"/>
+            <rect class="part" x="531" y="128" width="18" height="26" rx="2"/>
+            <path class="w" d="M540 154 V160"/>
+            <circle class="dot" cx="540" cy="160" r="4"/>
+            <text x="526" y="106" text-anchor="end" class="lbl">10k</text>
+            <text x="526" y="146" text-anchor="end" class="lbl">10k</text>
+            <path class="ws" d="M540 120 H600"/>
+            <circle cx="600" cy="120" r="4" fill="var(--gate)"/>
+            <text x="592" y="222" text-anchor="end" class="lbl" style="fill:var(--gate)">середина → A7 · P1_1 (NO POWER)</text>
+            <path class="ws" d="M600 120 V214" stroke-dasharray="3 3"/>
+            <circle class="dotp" cx="630" cy="80" r="4"/>
+            <path class="wp" d="M630 80 V108 H660"/>
+            <circle class="dot" cx="645" cy="160" r="4"/>
+            <path class="w" d="M645 160 V140 H660"/>
+            <rect x="660" y="95" width="80" height="60" rx="4" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <text x="700" y="120" text-anchor="middle" style="font-weight:600">USB</text>
+            <text x="700" y="138" text-anchor="middle" class="lbl">→ Nanit</text>
+            <text x="745" y="222" text-anchor="end" class="lbl">тумблер Nanit — ON</text>
+          </svg>
+        </div>
+      </figure>
+      <p class="parts"><b>Деталі:</b> блок 5V 6A, вимикач 6 A, тримач запобіжника + 5 A, 2 клемники (шина +5V і GND), USB-кабель (з боку блоку — лише червоний 5V і чорний GND), 2 × 10 kΩ (дільник шини → A7).</p>
+    </section>
+
+    <section>
+      <h2>Збирання</h2>
+      <ol class="checklist">
+        <li><span class="num">1</span><span>Блок → вимикач → запобіжник → клемник +5V. Мінус блоку → клемник GND. Провід 18AWG.</span></li>
+        <li><span class="num">2</span><span>USB-кабель: розріж, червоний у +5V, чорний у GND, білий і зелений заізолюй.</span></li>
+        <li><span class="num">3</span><span>Дільник 10k/10k між +5V і GND, середня точка тонким проводом → A7 (P1_1). Так прошивка бачить, що блок вимкнено (NO POWER).</span></li>
+      </ol>
+      <p class="check"><b>Перевірка мультиметром до прошивки:</b> вимикач OFF — на шині 0 V. ON — між +5V і GND 5.0–5.2 V, середня точка дільника ↔ GND ≈ 2.5 V. Тумблер Nanit — ON.</p>
+    </section>
+
+    <section>
+      <h2>Прошивка</h2>
+      <ol class="checklist">
+        <li><span class="num">1</span><span>Від'єднай USB-кабель від шини і підключи Nanit до комп'ютера.</span></li>
+        <li><span class="num">2</span><span><code>git checkout phase_1</code>, потім <code>~/.platformio/penv/bin/pio run -e nanit_pro -t upload</code>.</span></li>
+        <li><span class="num">3</span><span>Поверни USB-кабель шини на Nanit. Для логів — <code>pio device monitor -b 9600</code> (рядок раз на секунду: <code>bus,ok,nanit</code>, напр. <code>5.02,1,4.05</code>).</span></li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Що має бути на екрані</h2>
+      <div class="screens">
+        <figure class="screen">
+          <svg viewBox="0 0 160 128" role="img" aria-label="Екран фази 1: POWER OK">
+            <rect width="160" height="128" fill="#0b0d0e"/>
+            <text x="2" y="10" fill="#6fe3ff" font-size="7">PHASE 1: POWER + BUS</text>
+            <text x="2" y="30" fill="#7c868c" font-size="7">+5V BUS (A7 x2)</text>
+            <text x="2" y="52" fill="#fff" font-size="14">5.02 V</text>
+            <text x="2" y="78" fill="#7ee08a" font-size="14">POWER OK</text>
+            <text x="2" y="98" fill="#fff" font-size="7">NANIT 4.05V 80%</text>
+            <text x="2" y="118" fill="#7c868c" font-size="7">switch OFF -&gt; NO POWER</text>
+          </svg>
+          <figcaption>Вимикач ON</figcaption>
+        </figure>
+        <figure class="screen">
+          <svg viewBox="0 0 160 128" role="img" aria-label="Екран фази 1: NO POWER">
+            <rect width="160" height="128" fill="#0b0d0e"/>
+            <text x="2" y="10" fill="#6fe3ff" font-size="7">PHASE 1: POWER + BUS</text>
+            <text x="2" y="30" fill="#7c868c" font-size="7">+5V BUS (A7 x2)</text>
+            <text x="2" y="52" fill="#fff" font-size="14">0.00 V</text>
+            <text x="2" y="78" fill="#ff6bff" font-size="14">NO POWER</text>
+            <text x="2" y="98" fill="#fff" font-size="7">NANIT 4.05V 80%</text>
+            <text x="2" y="118" fill="#7c868c" font-size="7">switch OFF -&gt; NO POWER</text>
+          </svg>
+          <figcaption>Вимикач OFF — Nanit працює від свого Li-Po</figcaption>
+        </figure>
+      </div>
+      <div class="tbl-wrap" style="margin-top:14px">
+        <table>
+          <thead><tr><th>Дія</th><th>Норма</th><th>Якщо ні</th></tr></thead>
+          <tbody>
+            <tr><td>Вимикач ON</td><td>BUS 4.9–5.2 V, через ~3 с <b>POWER OK</b></td><td>BUS ≈ 0 — немає проводу середньої точки на A7 (P1_1) або дільник не від шини; BUS ≈ 10 V — стоїть лише один резистор</td></tr>
+            <tr><td>Вимикач OFF</td><td>одразу <b>NO POWER</b>, BUS ≈ 0 V</td><td>BUS не падає — Nanit живиться з іншого джерела, а дільник не на шині</td></tr>
+            <tr><td>Знову ON</td><td>POWER OK через ~3 с (гістерезис)</td><td>—</td></tr>
+            <tr><td>NANIT</td><td>3.3–4.2 V, % росте на USB</td><td>0 % при ввімкненому тумблері — перевір тумблер Nanit</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Далі</h2>
+      <p style="margin:0;max-width:70ch">Коли всі перевірки пройдено — фаза 2 (кнопки). Повний список фаз — у <code>README.md</code>, усі схеми — у <a href="schematics.html">schematics.html</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span>battery-tester-4ch · фаза 1</span>
+    <span>збирання: build.html · схеми: schematics.html</span>
+  </footer>
+</div>
