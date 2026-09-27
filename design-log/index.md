@@ -1,0 +1,13 @@
+# Design Log Index
+
+Catalog of design logs. Append entries here when a new log is created or its scope materially changes.
+
+Status meanings:
+
+- **drafted** — design written; open questions, scope or shape may still move.
+- **locked** — design frozen; implementation can begin, no further design churn expected.
+- **completed** — implemented and verified; log carries an Implementation Results section.
+
+| #   | Title | Status | Description |
+| --- | --- | --- | --- |
+| 001 | [Four-channel tester: plan and build order](001-plan.md) | locked | 4 channels: LM324 CC sink up to 1 A, TP4056 via relay module, NTC per cell, 3 buttons + 3 screens, bad-cell rules. Nanit on USB from the 5V bus, Li-Po backup, NO POWER state. `docs/plan.html` + `docs/build.html` (9 soldering stages with checks). Firmware not started. |

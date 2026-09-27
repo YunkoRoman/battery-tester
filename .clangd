@@ -1,0 +1,18 @@
+CompileFlags:
+  BuiltinHeaders: QueryDriver
+  # PlatformIO's IDE/compiledb export injects this ESP32 core include for any
+  # library declaring broad (architectures=*) compatibility, even though the
+  # real `pio run` build (AVR-only) never sees it. Strip it so clangd doesn't
+  # resolve <Arduino.h> to the wrong framework.
+  Remove: ["-I/home/roman/.platformio/packages/framework-arduinoespressif32*"]
+Diagnostics:
+  Suppress: [pp_expects_filename, unused-includes]
+---
+If:
+  PathMatch: .*\.ino
+CompileFlags:
+  Add:
+    - "-x"
+    - "c++"
+    - "-include"
+    - "Arduino.h"

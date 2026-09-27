@@ -1,0 +1,754 @@
+<title>Тестер 4×18650 · план</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --paper:#f4efe4;
+    --paper-raised:#faf6ec;
+    --ink:#2a251d;
+    --ink-soft:#5a5347;
+    --rule:#d8cdb6;
+    --rule-strong:#b7a98a;
+    --power:#a3211f;
+    --gnd:#2a251d;
+    --gate:#c1631f;
+    --sense:#1f6e6b;
+    --tag-bg:#ece2c9;
+    --code-bg:#eee5cf;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1c1a15;
+      --paper-raised:#242019;
+      --ink:#f1ead9;
+      --ink-soft:#b6ab93;
+      --rule:#4a4334;
+      --rule-strong:#6b6146;
+      --power:#e2695f;
+      --gnd:#f1ead9;
+      --gate:#e8a85e;
+      --sense:#6bc2bd;
+      --tag-bg:#332c1f;
+      --code-bg:#2b2519;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1c1a15;
+    --paper-raised:#242019;
+    --ink:#f1ead9;
+    --ink-soft:#b6ab93;
+    --rule:#4a4334;
+    --rule-strong:#6b6146;
+    --power:#e2695f;
+    --gnd:#f1ead9;
+    --gate:#e8a85e;
+    --sense:#6bc2bd;
+    --tag-bg:#332c1f;
+    --code-bg:#2b2519;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Archivo',system-ui,sans-serif;
+    padding-inline:20px;
+    padding-block:48px;
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-attachment:local;
+  }
+  .sheet{
+    max-width:920px;
+    margin-inline:auto;
+    background:var(--paper-raised);
+    border:1px solid var(--rule-strong);
+    box-shadow:0 1px 0 var(--rule-strong);
+  }
+  header{
+    padding:28px 32px 22px;
+    border-bottom:2px solid var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .title-block h1{
+    margin:0;
+    font-size:clamp(1.5rem, 3vw, 2.1rem);
+    font-weight:800;
+    letter-spacing:-0.01em;
+    text-wrap:balance;
+  }
+  .title-block p{
+    margin:4px 0 0;
+    color:var(--ink-soft);
+    font-size:0.95rem;
+    max-width:60ch;
+  }
+  .drawing-no{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:var(--ink-soft);
+    text-align:right;
+    line-height:1.6;
+  }
+  .drawing-no b{ color:var(--ink); font-weight:600; }
+
+  main{ padding:28px 32px 36px; }
+
+  section{ margin-block-end:40px; }
+  section:last-child{ margin-block-end:0; }
+
+  h2{
+    font-size:0.78rem;
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--rule);
+  }
+
+  figure{ margin:0; }
+  .schem-frame{
+    background:var(--paper);
+    border:1px solid var(--rule-strong);
+    padding:12px;
+  }
+  svg{ display:block; width:100%; height:auto; color:var(--ink); }
+
+  .schem-frame{ overflow-x:auto; }
+  svg.schem{ min-width:620px; }
+  svg.schem text{ font-family:'JetBrains Mono',monospace; font-size:13px; fill:var(--ink); }
+  svg.schem .lbl{ fill:var(--ink-soft); font-size:12px; }
+  svg.schem .w{ stroke:currentColor; stroke-width:2; fill:none; }
+  svg.schem .wp{ stroke:var(--power); stroke-width:2; fill:none; }
+  svg.schem .ws{ stroke:var(--gate); stroke-width:2; fill:none; }
+  svg.schem .part{ fill:var(--paper-raised); stroke:currentColor; stroke-width:2; }
+  svg.schem .dot{ fill:currentColor; }
+  svg.schem .dotp{ fill:var(--power); }
+  svg.schem .dots{ fill:var(--gate); }
+
+  .to220{ display:grid; grid-template-columns:200px 1fr; gap:24px; align-items:center; }
+  svg.to220-svg{ max-width:200px; }
+  svg.to220-svg text{ font-family:'JetBrains Mono',monospace; fill:var(--ink); }
+  svg.to220-svg .t-sm{ font-size:11px; fill:var(--ink-soft); }
+  svg.to220-svg .t-part{ font-size:14px; font-weight:700; }
+  svg.to220-svg .t-pin{ font-size:16px; font-weight:700; }
+  @media (max-width:640px){ .to220{ grid-template-columns:1fr; } }
+  figcaption{
+    margin-top:10px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    max-width:70ch;
+  }
+
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 22px;
+    margin-top:14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .legend i{ width:18px; height:3px; display:inline-block; border-radius:1px; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.88rem;
+  }
+  caption{ text-align:left; margin-bottom:8px; }
+  th, td{
+    text-align:left;
+    padding:9px 12px;
+    border-bottom:1px solid var(--rule);
+    vertical-align:top;
+  }
+  th{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+    border-bottom:1px solid var(--rule-strong);
+  }
+  td.mono, .pin{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85rem;
+  }
+  .tbl-wrap{ overflow-x:auto; }
+
+  .pinmap{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--rule-strong);
+    border:1px solid var(--rule-strong);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.82rem;
+  }
+  .pinmap > div{
+    background:var(--paper-raised);
+    padding:12px 14px;
+  }
+  .pinmap .head{
+    background:var(--tag-bg);
+    font-size:0.7rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  .pinmap .port{ font-weight:700; }
+  .pinmap .gate{ color:var(--gate); }
+  .pinmap .sense{ color:var(--sense); }
+
+  .checklist{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .checklist li{
+    display:flex; gap:12px; align-items:flex-start;
+    font-size:0.92rem; line-height:1.5;
+  }
+  .checklist .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    color:var(--paper-raised);
+    background:var(--ink);
+    width:22px; height:22px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+
+  .warn{
+    margin-top:16px;
+    padding:12px 14px;
+    background:var(--tag-bg);
+    border-left:3px solid var(--power);
+    font-size:0.85rem;
+    line-height:1.5;
+  }
+  .warn b{ color:var(--power); }
+
+  code{
+    font-family:'JetBrains Mono',monospace;
+    background:var(--code-bg);
+    padding:0.1em 0.4em;
+    border-radius:3px;
+    font-size:0.92em;
+  }
+
+  footer{
+    padding:16px 32px 26px;
+    border-top:1px solid var(--rule);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width:640px){
+    .pinmap{ grid-template-columns:1fr; }
+    header{ flex-direction:column; align-items:flex-start; }
+    .drawing-no{ text-align:left; }
+  }
+
+  .screens{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+  .screen svg{ max-width:320px; border-radius:6px; border:6px solid #1a1d1f; }
+  .screen svg text{ font-family:'JetBrains Mono',monospace; }
+  .screen figcaption{ margin-top:6px; }
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="gnd"><path d="M0 0 V6 M-10 6 H10 M-6 10 H6 M-2 14 H2" stroke="currentColor" stroke-width="2" fill="none"/></g>
+  </defs>
+</svg>
+
+<div class="sheet">
+  <header>
+    <div class="title-block">
+      <h1>Тестер ємності 18650 — 4 канали</h1>
+      <p>План проєкту. Порядок пайки — у <a href="build.html">build.html</a>. Кожен канал сам заряджає, розряджає стабільним струмом 0.1–1.0 A, міряє ємність, внутрішній опір і температуру та відбраковує погані акумулятори.</p>
+    </div>
+    <div class="drawing-no">
+      РОЗРОБКА <b>battery-capacity-tester</b><br>
+      ПЛАТА <b>Nanit Pro v3.1</b><br>
+      РЕВ <b>01</b>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Як усе з'єднано</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Блок</th><th>Що робить</th><th>Живлення</th></tr></thead>
+          <tbody>
+            <tr><td>Nanit Pro</td><td>Мозок: міряє V, I, T кожного каналу, задає струм, вмикає зарядку, показує екрани, читає кнопки</td><td>USB від +5V шини; вбудований Li-Po (тумблер увімкнений) — резерв</td></tr>
+            <tr><td>Блок 5V 6A → вимикач → запобіжник 5A</td><td>Головне живлення всього силового</td><td>мережа</td></tr>
+            <tr><td>4 × TP4056 через модуль реле</td><td>Заряд кожного акумулятора струмом 1 A</td><td>+5V шина</td></tr>
+            <tr><td>LM324 + 4 × IRL540N + шунти 1Ω</td><td>Стабілізатор струму розряду, 4 канали</td><td>+5V шина</td></tr>
+            <tr><td>Вентилятори 5V</td><td>Обдув радіатора MOSFET і зарядок</td><td>+5V шина, вмикає Nanit</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn"><b>Головне правило безпеки:</b> вимкнули головний вимикач блоку — зарядки, стабілізатори й вентилятори знеструмлені, струм не тече. Nanit лишається на своєму Li-Po, показує <b>NO POWER</b> і ставить тести на паузу. Входи стабілізаторів мають підтяжку до GND (струм = 0), затвори — підтяжку до GND, реле з тригером High і підтяжкою (зарядка вимкнена), усі лінії від акумуляторів ідуть через 10 kΩ (акумулятор не живить плату).</div>
+    </section>
+
+    <section>
+      <h2>Схема 1 · Розряд стабільним струмом (одна з 4 однакових)</h2>
+      <figure>
+        <div class="schem-frame">
+          <svg class="schem" viewBox="0 0 760 420" role="img" aria-label="Стабілізатор струму: ШІМ з Nanit через фільтр 39k/10k/10мкФ задає напругу на вході плюс LM324; вихід через 220 Ом керує затвором IRL540N; струм акумулятора йде через баласт 1 Ом, MOSFET і шунт 1 Ом; напруга шунта через 1k повертається на вхід мінус">
+            <!-- setpoint from Nanit -->
+            <circle cx="24" cy="185" r="4" fill="var(--gate)"/>
+            <text x="10" y="170" class="lbl" style="fill:var(--gate)">SETn · ШІМ</text>
+            <path class="ws" d="M24 185 H60"/>
+            <rect class="part" x="60" y="176" width="50" height="18" rx="2"/>
+            <text x="85" y="210" text-anchor="middle" class="lbl">39kΩ</text>
+            <path class="ws" d="M110 185 H230"/>
+            <circle class="dots" cx="135" cy="185" r="3.5"/>
+            <circle class="dots" cx="165" cy="185" r="3.5"/>
+            <path class="w" d="M135 185 V205"/>
+            <rect class="part" x="126" y="205" width="18" height="40" rx="2"/>
+            <path class="w" d="M135 245 V255"/>
+            <use href="#gnd" x="135" y="255"/>
+            <text x="121" y="229" text-anchor="end" class="lbl">10kΩ</text>
+            <path class="w" d="M165 185 V218"/>
+            <line x1="153" y1="218" x2="177" y2="218" stroke="currentColor" stroke-width="3"/>
+            <line x1="153" y1="226" x2="177" y2="226" stroke="currentColor" stroke-width="3"/>
+            <path class="w" d="M165 226 V255"/>
+            <use href="#gnd" x="165" y="255"/>
+            <text x="150" y="284" class="lbl">10µF</text>
+
+            <!-- op-amp -->
+            <path d="M230 165 L230 255 L320 210 Z" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <text x="236" y="190">+</text>
+            <text x="236" y="240">−</text>
+            <text x="262" y="214" class="lbl">LM324</text>
+            <text x="236" y="290" class="lbl">LM324: +5V від блоку</text>
+
+            <!-- gate drive -->
+            <path class="ws" d="M320 210 H340"/>
+            <rect class="part" x="340" y="201" width="50" height="18" rx="2"/>
+            <text x="365" y="193" text-anchor="middle" class="lbl">220Ω</text>
+            <path class="ws" d="M390 210 H452"/>
+            <circle class="dots" cx="420" cy="210" r="3.5"/>
+            <path class="w" d="M420 210 V240"/>
+            <rect class="part" x="411" y="240" width="18" height="40" rx="2"/>
+            <path class="w" d="M420 280 V290"/>
+            <use href="#gnd" x="420" y="290"/>
+            <text x="405" y="264" text-anchor="end" class="lbl">10kΩ</text>
+
+            <!-- MOSFET -->
+            <path class="w" d="M470 160 V192 H462"/>
+            <line x1="462" y1="186" x2="462" y2="198" stroke="currentColor" stroke-width="3"/>
+            <line x1="462" y1="204" x2="462" y2="216" stroke="currentColor" stroke-width="3"/>
+            <line x1="462" y1="222" x2="462" y2="234" stroke="currentColor" stroke-width="3"/>
+            <line x1="452" y1="186" x2="452" y2="234" stroke="currentColor" stroke-width="2"/>
+            <path class="w" d="M462 228 H470 V262"/>
+            <path class="w" d="M470 210 V228"/>
+            <path d="M463 210 L471 205 L471 215 Z" fill="currentColor"/>
+            <text x="482" y="205">Q · IRL540N</text>
+            <text x="482" y="222" class="lbl">на радіаторі</text>
+
+            <!-- power loop -->
+            <path d="M470 90 V60 H660 V170" stroke="var(--power)" stroke-width="4" fill="none" stroke-linejoin="round"/>
+            <rect class="part" x="458" y="90" width="24" height="70" rx="2"/>
+            <text x="492" y="120">R баласт</text>
+            <text x="492" y="137" class="lbl">1Ω · 5W</text>
+            <rect class="part" x="458" y="262" width="24" height="60" rx="2"/>
+            <text x="492" y="288">R шунт</text>
+            <text x="492" y="305" class="lbl">1Ω · 5W</text>
+            <path d="M470 322 V370 H660 V206" stroke="currentColor" stroke-width="4" fill="none" stroke-linejoin="round"/>
+            <circle class="dot" cx="560" cy="370" r="4"/>
+            <path class="w" d="M560 370 V384"/>
+            <use href="#gnd" x="560" y="384"/>
+            <text x="574" y="400" class="lbl">спільна GND</text>
+
+            <!-- battery -->
+            <line x1="636" y1="170" x2="684" y2="170" stroke="var(--power)" stroke-width="3"/>
+            <line x1="648" y1="182" x2="672" y2="182" stroke="currentColor" stroke-width="5"/>
+            <line x1="636" y1="194" x2="684" y2="194" stroke="var(--power)" stroke-width="3"/>
+            <line x1="648" y1="206" x2="672" y2="206" stroke="currentColor" stroke-width="5"/>
+            <text x="692" y="166" style="fill:var(--power);font-weight:700">+</text>
+            <text x="692" y="222" style="font-weight:700">−</text>
+            <text x="694" y="188">АКБ n</text>
+            <text x="694" y="205" class="lbl">18650</text>
+            <text x="565" y="50" text-anchor="middle" class="lbl">«+» АКБ → вимір V (схема 3)</text>
+
+            <!-- feedback -->
+            <circle class="dot" cx="470" cy="252" r="3.5"/>
+            <path class="w" d="M470 252 H440 V330 H350"/>
+            <rect class="part" x="300" y="321" width="50" height="18" rx="2"/>
+            <text x="325" y="355" text-anchor="middle" class="lbl">1kΩ</text>
+            <path class="w" d="M300 330 H210 V235 H230"/>
+            <text x="482" y="256" class="lbl">→ вимір I</text>
+          </svg>
+        </div>
+        <figcaption>Nanit задає струм ШІМ-сигналом. Фільтр 39k/10k/10µF перетворює його на рівну напругу 0…1.02 В. LM324 відкриває MOSFET рівно настільки, щоб напруга на шунті 1 Ω дорівнювала заданій: <code>I = V_задане / 1Ω</code>, від 0.1 до 1.0 A незалежно від напруги акумулятора. Між виходом LM324 і входом «−» — конденсатор 10 nF (від самозбудження, на схемі не показано). Баласт 1 Ω забирає частину тепла з MOSFET.</figcaption>
+        <div class="legend">
+          <span><i style="background:var(--power);height:4px"></i>силове коло «+»</span>
+          <span><i style="background:currentColor;height:4px"></i>силове повернення / GND</span>
+          <span><i style="background:var(--gate)"></i>сигнали керування</span>
+        </div>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Схема 2 · Заряд (одна з 4 однакових)</h2>
+      <figure>
+        <div class="schem-frame">
+          <svg class="schem" viewBox="0 0 760 300" role="img" aria-label="Заряд: блок 5V через вимикач і запобіжник на шину; реле каналу подає 5V на TP4056; TP4056 заряджає акумулятор; сигнал STDBY з TP4056 іде на Nanit">
+            <rect x="20" y="50" width="110" height="100" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
+            <text x="75" y="92" text-anchor="middle" style="font-weight:600">Блок</text>
+            <text x="75" y="110" text-anchor="middle" class="lbl">5V · 6A</text>
+            <path class="w" d="M75 150 V165"/>
+            <use href="#gnd" x="75" y="165"/>
+
+            <path class="wp" d="M130 75 H170"/>
+            <circle class="dotp" cx="170" cy="75" r="3.5"/>
+            <path d="M170 75 L198 62" stroke="var(--power)" stroke-width="2"/>
+            <circle class="dotp" cx="202" cy="75" r="3.5"/>
+            <text x="186" y="50" text-anchor="middle" class="lbl">вимикач</text>
+            <path class="wp" d="M202 75 H220"/>
+            <rect class="part" x="220" y="67" width="36" height="16" rx="2"/>
+            <text x="238" y="100" text-anchor="middle" class="lbl">5A</text>
+            <path class="wp" d="M256 75 H320"/>
+            <circle class="dotp" cx="280" cy="75" r="4"/>
+            <path class="wp" d="M280 75 V230"/>
+            <text x="270" y="200" text-anchor="end" class="lbl">+5V шина:</text>
+            <text x="270" y="216" text-anchor="end" class="lbl">реле, LM324,</text>
+            <text x="270" y="232" text-anchor="end" class="lbl">вентилятори</text>
+
+            <rect x="320" y="40" width="110" height="90" rx="4" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <circle class="dotp" cx="340" cy="75" r="3.5"/>
+            <path d="M340 75 L372 62" stroke="var(--power)" stroke-width="2"/>
+            <circle class="dotp" cx="380" cy="75" r="3.5"/>
+            <path class="wp" d="M320 75 H340"/>
+            <path class="wp" d="M380 75 H470"/>
+            <text x="375" y="112" text-anchor="middle" style="font-weight:600">Реле n</text>
+            <text x="383" y="146" class="lbl">тригер High</text>
+
+            <path class="ws" d="M375 130 V255"/>
+            <circle cx="375" cy="258" r="4" fill="var(--gate)"/>
+            <text x="388" y="276" class="lbl" style="fill:var(--gate)">RELn · Nanit</text>
+            <circle class="dots" cx="375" cy="190" r="3.5"/>
+            <path class="w" d="M375 190 H405 V200"/>
+            <rect class="part" x="396" y="200" width="18" height="34" rx="2"/>
+            <path class="w" d="M405 234 V240"/>
+            <use href="#gnd" x="405" y="240"/>
+            <text x="420" y="222" class="lbl">10kΩ</text>
+
+            <rect x="470" y="40" width="130" height="140" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
+            <text x="535" y="102" text-anchor="middle" style="font-weight:600">TP4056</text>
+            <text x="535" y="120" text-anchor="middle" class="lbl">1A, без захисту</text>
+            <text x="478" y="80" class="lbl">IN+</text>
+            <text x="478" y="164" class="lbl">IN−</text>
+            <text x="592" y="80" text-anchor="end" class="lbl">B+</text>
+            <text x="592" y="164" text-anchor="end" class="lbl">B−</text>
+            <path class="w" d="M470 160 H452 V172"/>
+            <use href="#gnd" x="452" y="172"/>
+            <path class="ws" d="M535 180 V255"/>
+            <circle cx="535" cy="258" r="4" fill="var(--gate)"/>
+            <text x="545" y="200" class="lbl">LED STDBY</text>
+            <text x="548" y="276" class="lbl" style="fill:var(--gate)">DONEn · Nanit</text>
+
+            <path d="M600 75 H680 V100" stroke="var(--power)" stroke-width="4" fill="none" stroke-linejoin="round"/>
+            <line x1="656" y1="100" x2="704" y2="100" stroke="var(--power)" stroke-width="3"/>
+            <line x1="668" y1="112" x2="692" y2="112" stroke="currentColor" stroke-width="5"/>
+            <line x1="656" y1="124" x2="704" y2="124" stroke="var(--power)" stroke-width="3"/>
+            <line x1="668" y1="136" x2="692" y2="136" stroke="currentColor" stroke-width="5"/>
+            <path d="M680 136 V160 H600" stroke="currentColor" stroke-width="4" fill="none" stroke-linejoin="round"/>
+            <text x="712" y="116">АКБ n</text>
+            <text x="660" y="236" text-anchor="middle" class="lbl">той самий акумулятор,</text>
+            <text x="660" y="252" text-anchor="middle" class="lbl">що й на схемі 1</text>
+          </svg>
+        </div>
+        <figcaption>Реле подає 5 V на зарядку лише тоді, коли прошивка вмикає заряд. На час розряду реле вимкнене, і TP4056 від акумулятора майже нічого не бере (&lt; 2 µA). Коли заряд завершено, на TP4056 загоряється світлодіод STDBY — до його контакту припаюється провід на Nanit (пін з INPUT_PULLUP: LOW = заряджено). Прошивка ніколи не вмикає заряд і розряд одночасно на одному каналі.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Схема 3 · Вимірювання (на кожен канал)</h2>
+      <figure>
+        <div class="schem-frame">
+          <svg class="schem" viewBox="0 0 760 210" role="img" aria-label="Вимірювання: напруга акумулятора через 10k на аналоговий пін з підтяжкою 10k і конденсатором 100нФ; струм — напруга шунта через 10k на аналоговий пін; температура — дільник 10k і NTC від піна NTC_PWR">
+            <text x="130" y="24" text-anchor="middle" style="font-weight:600">V · напруга</text>
+            <circle cx="40" cy="70" r="4" fill="var(--power)"/>
+            <text x="40" y="56" text-anchor="middle" class="lbl">«+» АКБ</text>
+            <path d="M40 70 H110" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <circle cx="80" cy="70" r="3.5" fill="var(--sense)"/>
+            <path class="w" d="M80 70 V90"/>
+            <rect class="part" x="71" y="90" width="18" height="40" rx="2"/>
+            <path class="w" d="M80 130 V140"/>
+            <use href="#gnd" x="80" y="140"/>
+            <text x="66" y="108" text-anchor="end">R4</text>
+            <text x="66" y="124" text-anchor="end" class="lbl">10k</text>
+            <rect class="part" x="110" y="61" width="50" height="18" rx="2"/>
+            <text x="135" y="53" text-anchor="middle" class="lbl">R5 10k</text>
+            <path d="M160 70 H216" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <circle cx="185" cy="70" r="3.5" fill="var(--sense)"/>
+            <path class="w" d="M185 70 V100"/>
+            <line x1="173" y1="100" x2="197" y2="100" stroke="currentColor" stroke-width="3"/>
+            <line x1="173" y1="107" x2="197" y2="107" stroke="currentColor" stroke-width="3"/>
+            <path class="w" d="M185 107 V118"/>
+            <use href="#gnd" x="185" y="118"/>
+            <text x="201" y="130" class="lbl">100nF</text>
+            <circle cx="220" cy="70" r="4" fill="var(--gate)"/>
+            <text x="220" y="56" text-anchor="middle" class="lbl" style="fill:var(--gate)">Vn</text>
+            <text x="130" y="170" text-anchor="middle" class="lbl">окремий провід від «+» АКБ</text>
+            <text x="130" y="186" text-anchor="middle" class="lbl">R5 — захист входу</text>
+
+            <text x="380" y="24" text-anchor="middle" style="font-weight:600">I · струм</text>
+            <circle cx="290" cy="70" r="4" fill="currentColor"/>
+            <text x="290" y="56" text-anchor="middle" class="lbl">шунт</text>
+            <path d="M290 70 H330" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <rect class="part" x="330" y="61" width="50" height="18" rx="2"/>
+            <text x="355" y="53" text-anchor="middle" class="lbl">10k</text>
+            <path d="M380 70 H466" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <circle cx="420" cy="70" r="3.5" fill="var(--sense)"/>
+            <path class="w" d="M420 70 V100"/>
+            <line x1="408" y1="100" x2="432" y2="100" stroke="currentColor" stroke-width="3"/>
+            <line x1="408" y1="107" x2="432" y2="107" stroke="currentColor" stroke-width="3"/>
+            <path class="w" d="M420 107 V118"/>
+            <use href="#gnd" x="420" y="118"/>
+            <text x="436" y="130" class="lbl">100nF</text>
+            <circle cx="470" cy="70" r="4" fill="var(--gate)"/>
+            <text x="470" y="56" text-anchor="middle" class="lbl" style="fill:var(--gate)">In</text>
+            <text x="380" y="170" text-anchor="middle" class="lbl">I = V шунта / 1Ω</text>
+            <text x="380" y="186" text-anchor="middle" class="lbl">1.0 A → 1.0 V → ~205 відліків АЦП</text>
+
+            <text x="630" y="24" text-anchor="middle" style="font-weight:600">T · температура</text>
+            <circle cx="540" cy="70" r="4" fill="var(--gate)"/>
+            <text x="540" y="56" text-anchor="middle" class="lbl" style="fill:var(--gate)">NTC_PWR</text>
+            <path class="ws" d="M540 70 H570"/>
+            <rect class="part" x="570" y="61" width="50" height="18" rx="2"/>
+            <text x="595" y="53" text-anchor="middle" class="lbl">10k</text>
+            <path d="M620 70 H716" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <circle cx="660" cy="70" r="3.5" fill="var(--sense)"/>
+            <path class="w" d="M660 70 V90"/>
+            <rect class="part" x="651" y="90" width="18" height="40" rx="2"/>
+            <line x1="643" y1="134" x2="677" y2="86" stroke="currentColor" stroke-width="1.5"/>
+            <path class="w" d="M660 130 V140"/>
+            <use href="#gnd" x="660" y="140"/>
+            <text x="682" y="108">NTC</text>
+            <text x="682" y="124" class="lbl">10k</text>
+            <circle cx="720" cy="70" r="4" fill="var(--gate)"/>
+            <text x="720" y="56" text-anchor="middle" class="lbl" style="fill:var(--gate)">Tn</text>
+            <text x="630" y="170" text-anchor="middle" class="lbl">NTC приклеїти до корпусу АКБ</text>
+            <text x="630" y="186" text-anchor="middle" class="lbl">NTC_PWR = один пін на всі 4 NTC</text>
+          </svg>
+        </div>
+        <figcaption>Усі проводи від акумулятора до Nanit — окремі тонкі проводи прямо з торців тримача або від крокодилів, як у робочій одноканальній схемі. Дільники NTC живляться від піна Nanit (<code>NTC_PWR</code>), тож коли Nanit вимкнений, на них немає напруги.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Тримач і крокодили</h2>
+      <ul class="checklist">
+        <li><span class="num">1</span><span>На кожен канал: тримач 18650 і пара крокодилів (червоний/чорний) на силіконовому проводі 18AWG, підключені паралельно до тих самих клем каналу.</span></li>
+        <li><span class="num">2</span><span>Тонкий провід виміру V припаюється прямо до клеми або до тіла крокодила, а не до спільної рейки — щоб опір контакту не потрапляв у вимір.</span></li>
+        <li><span class="num">3</span><span>В одному каналі — або тримач, або крокодили, не обидва одночасно.</span></li>
+        <li><span class="num">4</span><span>У крокодилів контакт гірший, ніж у тримача, — внутрішній опір через них покаже на 20–50 mΩ більше. Прошивка це не компенсує, тому пороги Ri орієнтовані на тримач.</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Піни Nanit</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Канал</th><th>V</th><th>I</th><th>T (NTC)</th><th>SET (ШІМ)</th><th>REL (реле)</th><th>DONE (STDBY)</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">1</td><td class="mono">A0 · P10_2</td><td class="mono">A2 · P10_1</td><td class="mono">A3 · P7_1</td><td class="mono">D6 · P10_4</td><td class="mono">D24 · P10_3</td><td class="mono">D28 · P7_3</td></tr>
+            <tr><td class="mono">2</td><td class="mono">A1 · P5_2</td><td class="mono">A12 · P5_3</td><td class="mono">A4 · P7_2</td><td class="mono">D2 · P5_1</td><td class="mono">D33 · P5_4</td><td class="mono">D22 · P6_4</td></tr>
+            <tr><td class="mono">3</td><td class="mono">A13 · P6_3</td><td class="mono">A14 · P6_2</td><td class="mono">A11 · P4_1</td><td class="mono">D9 · P7_4</td><td class="mono">D23 · P6_1</td><td class="mono">D25 · P3_2</td></tr>
+            <tr><td class="mono">4</td><td class="mono">A9 · P2_2</td><td class="mono">A10 · P2_1</td><td class="mono">A8 · P2_4</td><td class="mono">D5 · P8_3</td><td class="mono">D42 · P2_3</td><td class="mono">D30 · P3_3</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tbl-wrap" style="margin-top:14px">
+        <table>
+          <thead><tr><th>Спільне</th><th>Пін</th><th>Примітка</th></tr></thead>
+          <tbody>
+            <tr><td>Кнопка ◀</td><td class="mono">D14 · P11_1</td><td>до GND, INPUT_PULLUP</td></tr>
+            <tr><td>Кнопка OK</td><td class="mono">D15 · P11_2</td><td>до GND, INPUT_PULLUP</td></tr>
+            <tr><td>Кнопка ▶</td><td class="mono">D43 · P11_3</td><td>до GND, INPUT_PULLUP</td></tr>
+            <tr><td>Вентилятори</td><td class="mono">D10 · P9_4</td><td>ШІМ → 220Ω → затвор IRL540N (5-й), діод 1N5819 паралельно вентилятору</td></tr>
+            <tr><td>NTC_PWR</td><td class="mono">D31 · P3_4</td><td>HIGH під час вимірювання температури</td></tr>
+            <tr><td>Батарея Nanit</td><td class="mono">A15 (вбудовано)</td><td><code>getBatteryVoltage()</code> з NanitLib</td></tr>
+            <tr><td>Запас</td><td class="mono">A6, A7, D7, D8 (P1); D32, D34, D36</td><td>на майбутнє</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">P8_1/P8_2 (D0/D1) не використовуємо — це USB-Serial. Від роз'ємів беремо лише сигнальні піни та GND; «+» роз'ємів не підключаємо.</p>
+    </section>
+
+    <section>
+      <h2>Кнопки і екрани</h2>
+      <div class="screens">
+        <figure class="screen">
+          <svg viewBox="0 0 160 128" role="img" aria-label="Головний екран: стан 4 каналів і заряд Nanit">
+            <rect width="160" height="128" fill="#0b0d0e"/>
+            <text x="4" y="10" fill="#8fb3c9" font-size="7">TESTER 4x18650</text>
+            <text x="156" y="10" fill="#7ee08a" font-size="7" text-anchor="end">NANIT 87%</text>
+            <line x1="0" y1="14" x2="160" y2="14" stroke="#2a3338"/>
+            <rect x="0" y="19" width="160" height="14" fill="#1f3440"/>
+            <text x="3" y="29" font-size="7" fill="#fff">1 <tspan fill="#ffd24a">DIS</tspan> 3.72V 1.00A 1234mAh</text>
+            <text x="3" y="47" font-size="7" fill="#fff">2 <tspan fill="#6fb6ff">CHG</tspan> 4.05V step 1/3</text>
+            <text x="3" y="65" font-size="7" fill="#fff">3 <tspan fill="#ff6b6b">BAD</tspan> Ri 320 mOhm</text>
+            <text x="3" y="83" font-size="7" fill="#7c868c">4 --- no cell</text>
+            <text x="3" y="122" font-size="6" fill="#7c868c">&lt; &gt; select    OK open</text>
+          </svg>
+          <figcaption>Головний: усі 4 канали і заряд Nanit</figcaption>
+        </figure>
+        <figure class="screen">
+          <svg viewBox="0 0 160 128" role="img" aria-label="Екран каналу з деталями">
+            <rect width="160" height="128" fill="#0b0d0e"/>
+            <text x="4" y="10" fill="#ffd24a" font-size="7">CH1 DISCHARGE</text>
+            <text x="156" y="10" fill="#7ee08a" font-size="7" text-anchor="end">87%</text>
+            <line x1="0" y1="14" x2="160" y2="14" stroke="#2a3338"/>
+            <text x="4" y="28" font-size="7" fill="#fff">V     3.72 V</text>
+            <text x="4" y="40" font-size="7" fill="#fff">I     1.00 A</text>
+            <text x="4" y="52" font-size="7" fill="#fff">T     31 C</text>
+            <text x="4" y="64" font-size="7" fill="#fff">CAP   1234 mAh</text>
+            <text x="4" y="76" font-size="7" fill="#fff">Ri    85 mOhm</text>
+            <text x="4" y="88" font-size="7" fill="#fff">TIME  01:14:07</text>
+            <text x="4" y="100" font-size="7" fill="#8fb3c9">STEP  2/3 discharge</text>
+            <text x="3" y="122" font-size="6" fill="#7c868c">&lt; &gt; channel   OK menu</text>
+          </svg>
+          <figcaption>Канал: усі дані одного акумулятора</figcaption>
+        </figure>
+        <figure class="screen">
+          <svg viewBox="0 0 160 128" role="img" aria-label="Налаштування каналу: струм, cutoff, режим, старт">
+            <rect width="160" height="128" fill="#0b0d0e"/>
+            <text x="4" y="10" fill="#8fb3c9" font-size="7">CH1 SETTINGS</text>
+            <line x1="0" y1="14" x2="160" y2="14" stroke="#2a3338"/>
+            <rect x="0" y="20" width="160" height="12" fill="#1f3440"/>
+            <text x="4" y="29" font-size="7" fill="#fff">&gt; CURRENT   1.00 A</text>
+            <text x="4" y="43" font-size="7" fill="#fff">  CUTOFF    3.00 V</text>
+            <text x="4" y="57" font-size="7" fill="#fff">  MODE      FULL</text>
+            <text x="4" y="71" font-size="7" fill="#7ee08a">  START</text>
+            <text x="4" y="85" font-size="7" fill="#fff">  BACK</text>
+            <text x="3" y="122" font-size="6" fill="#7c868c">&lt; &gt; change   OK next</text>
+          </svg>
+          <figcaption>Налаштування: струм, cutoff, режим</figcaption>
+        </figure>
+      </div>
+      <div class="tbl-wrap" style="margin-top:14px">
+        <table>
+          <thead><tr><th>Параметр</th><th>Діапазон</th><th>Крок</th><th>За замовчуванням</th></tr></thead>
+          <tbody>
+            <tr><td>Струм розряду</td><td class="mono">0.10 – 1.00 A</td><td class="mono">0.05 A</td><td class="mono">0.50 A</td></tr>
+            <tr><td>Cutoff</td><td class="mono">2.80 – 3.30 V</td><td class="mono">0.05 V</td><td class="mono">3.00 V</td></tr>
+            <tr><td>Режим</td><td>FULL (заряд → розряд → дозаряд) · DISCHARGE · CHARGE</td><td>—</td><td>FULL</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">Шрифт дисплея (Adafruit GFX) не має кирилиці — написи на екрані латиницею. Налаштування кожного каналу зберігаються в EEPROM і не губляться після вимкнення.</p>
+    </section>
+
+    <section>
+      <h2>Цикл FULL</h2>
+      <ol class="checklist">
+        <li><span class="num">1</span><span><b>Перевірка:</b> V ≥ 2.0 V і T &lt; 40 °C, інакше DEAD / HOT.</span></li>
+        <li><span class="num">2</span><span><b>Заряд:</b> реле ON до сигналу STDBY. Ліміт 4 год.</span></li>
+        <li><span class="num">3</span><span><b>Пауза</b> 10 хв — напруга стабілізується.</span></li>
+        <li><span class="num">4</span><span><b>Тест Ri:</b> V без навантаження → 2 с заданим струмом → Ri = ΔV / I.</span></li>
+        <li><span class="num">5</span><span><b>Розряд</b> стабільним струмом до cutoff (5 вимірювань поспіль). Рахуються mAh, Wh, максимальна T.</span></li>
+        <li><span class="num">6</span><span><b>Пауза</b> 10 хв, потім <b>дозаряд</b> до повного. Результат лишається на екрані до натискання OK.</span></li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Відбраковка поганих акумуляторів</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Статус</th><th>Умова</th><th>Що робить прошивка</th></tr></thead>
+          <tbody>
+            <tr><td class="mono" style="color:var(--power)">DEAD</td><td>На старті V &lt; 2.0 V</td><td>Не заряджає (глибоко розряджені Li-ion заряджати небезпечно)</td></tr>
+            <tr><td class="mono" style="color:var(--power)">BAD Ri</td><td>Ri &gt; 250 mΩ (добрий &lt; 120, середній 120–250)</td><td>Зупиняє канал, показує Ri</td></tr>
+            <tr><td class="mono" style="color:var(--power)">SAG</td><td>Під навантаженням падає нижче cutoff раніше ніж за 5 хв</td><td>Зупиняє розряд — сильне просідання</td></tr>
+            <tr><td class="mono" style="color:var(--power)">HOT</td><td>T &gt; 45 °C на заряді або &gt; 55 °C на розряді</td><td>Вимикає і заряд, і розряд каналу</td></tr>
+            <tr><td class="mono" style="color:var(--power)">CHG TIMEOUT</td><td>Заряд довше 4 год</td><td>Вимикає зарядку — акумулятор не тримає заряд</td></tr>
+            <tr><td class="mono" style="color:var(--power)">NO POWER</td><td>Задано струм, а шунт показує 0 (блок 5V вимкнений)</td><td>Пауза всіх каналів, дані зберігаються; продовження після увімкнення блоку</td></tr>
+            <tr><td class="mono" style="color:var(--power)">REMOVED</td><td>Під час роботи V &lt; 0.5 V</td><td>Зупиняє канал</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Тепло при 1 A</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Де</th><th>На канал</th><th>4 канали</th><th>Що робимо</th></tr></thead>
+          <tbody>
+            <tr><td>MOSFET</td><td class="mono">до 2.2 W (при 4.2 V)</td><td class="mono">до 8.8 W</td><td>Один алюмінієвий радіатор + вентилятор. Кожен MOSFET через ізолюючу прокладку і втулку — фланці різні, це стоки</td></tr>
+            <tr><td>Шунт + баласт</td><td class="mono">2 × 1 W</td><td class="mono">8 W</td><td>Резистори 5 W, піднято над платою, в потоці повітря</td></tr>
+            <tr><td>TP4056</td><td class="mono">≈ 1.3 W</td><td class="mono">≈ 5 W</td><td>Обдув; мікросхема сама знижує струм при перегріві</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">Струм від блоку: 4 зарядки × 1 A + реле 0.3 A + вентилятори ~0.4 A ≈ 4.7 A — блок на 6 A з запасом. Вентилятори вмикаються, коли будь-який канал розряджає струмом від 0.3 A або заряджає.</p>
+    </section>
+
+    <section>
+      <h2>Що докупити</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Позиція</th><th>К-сть</th><th>Навіщо</th></tr></thead>
+          <tbody>
+            <tr><td>Блок живлення 5V 6A (30 W)</td><td class="mono">1</td><td>Живлення зарядок, реле, LM324, вентиляторів</td></tr>
+            <tr><td>Тумблер/кнопка-вимикач 6 A</td><td class="mono">1</td><td>Головний вимикач силового живлення</td></tr>
+            <tr><td>Тримач запобіжника + запобіжник 5 A</td><td class="mono">1</td><td>Захист від короткого замикання</td></tr>
+            <tr><td>USB-кабель під Nanit (або USB-перехідник з клемами)</td><td class="mono">1</td><td>Живлення Nanit від +5V шини; для прошивки від'єднується</td></tr>
+            <tr><td>Модуль TP4056 <b>без захисту</b> (контакти IN+ IN− B+ B−), Type-C</td><td class="mono">4 (+1)</td><td>Заряд. Версія без захисту: у неї B− = GND, як потрібно схемі</td></tr>
+            <tr><td>Модуль реле 4 канали 5V з перемичкою H/L</td><td class="mono">1</td><td>Вмикання зарядок; перемичку ставимо на High</td></tr>
+            <tr><td>LM324N (DIP-14) + панелька DIP-14</td><td class="mono">1 + 1</td><td>4 стабілізатори струму в одній мікросхемі</td></tr>
+            <tr><td>Резистор 1 Ω 5 W (цементний)</td><td class="mono">8</td><td>4 шунти + 4 баласти — саме вони дають 1 A</td></tr>
+            <tr><td>IRL540N (або IRLZ44N)</td><td class="mono">1</td><td>Для вентилятора (4 вже є — на канали)</td></tr>
+            <tr><td>Радіатор алюмінієвий ~100×40×20 мм</td><td class="mono">1</td><td>Для 4 MOSFET</td></tr>
+            <tr><td>Ізолюючий набір TO-220 (прокладка + втулка) і термопаста</td><td class="mono">4</td><td>Фланці MOSFET — стоки, між собою не можна з'єднувати</td></tr>
+            <tr><td>NTC 10k B3950 з проводами</td><td class="mono">4</td><td>Температура акумуляторів</td></tr>
+            <tr><td>Резистори 39 kΩ / 1 kΩ / 10 kΩ</td><td class="mono">4 / 4 / ~20</td><td>Фільтр ШІМ, зворотний зв'язок, підтяжки, захист входів (10k частково є)</td></tr>
+            <tr><td>Конденсатори 10 µF 16V / 100 nF / 10 nF</td><td class="mono">4 / 12 / 4</td><td>Фільтр ШІМ, фільтр АЦП, стабільність LM324</td></tr>
+            <tr><td>Діод 1N5819</td><td class="mono">1</td><td>Захист MOSFET вентилятора</td></tr>
+            <tr><td>Тактові кнопки 6×6 мм</td><td class="mono">3</td><td>◀ OK ▶</td></tr>
+            <tr><td>Крокодили ізольовані червоні / чорні</td><td class="mono">4 / 4</td><td>Підключення акумуляторів без тримача</td></tr>
+            <tr><td>Силіконовий провід 18AWG червоний + чорний</td><td class="mono">по 2 м</td><td>Силові кола 1 A</td></tr>
+            <tr><td>Тонкий провід 24–26AWG</td><td class="mono">~5 м</td><td>Проводи вимірювання, сигнали</td></tr>
+            <tr><td>Макетна плата під пайку 7×9 см</td><td class="mono">2</td><td>Силова частина і LM324</td></tr>
+            <tr><td>Клемники гвинтові 2-pin 5.08 мм</td><td class="mono">~12</td><td>Акумулятори, блок, вентилятори</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">Вже є: 4 × IRL540N, 4 тримачі 18650, вентилятори 5V, резистори 10 kΩ і 220 Ω. Резистори 10 Ω / 10 W у новій схемі не потрібні — лишаються в запасі.</p>
+    </section>
+
+    <section>
+      <h2>Узгоджено</h2>
+      <ol class="checklist">
+        <li><span class="num">1</span><span>Nanit живиться від +5V шини через USB, тумблер Nanit увімкнений, Li-Po — резерв. Головний вимикач — на лінії блоку.</span></li>
+        <li><span class="num">2</span><span>Пороги за замовчуванням: Ri &gt; 250 mΩ = BAD, cutoff 3.0 V, струм 0.5 A.</span></li>
+        <li><span class="num">3</span><span>Є 4 × IRL540N (канали) і 4 тримачі; докупити 1 MOSFET для вентилятора.</span></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <span>battery-tester-4ch · план</span>
+    <span>одноканальний прототип: ../battery-capacity-tester</span>
+  </footer>
+</div>

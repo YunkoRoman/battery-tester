@@ -1,0 +1,6 @@
+[submodule "lib/NanitLib"]
+	path = lib/NanitLib
+	url = https://github.com/NanitRobot/NanitLib.git
+[submodule "lib/FastLed_Neopixel_Nanit"]
+	path = lib/FastLed_Neopixel_Nanit
+	url = https://github.com/kireev7/FastLed_Neopixel_Nanit.git
