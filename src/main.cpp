@@ -8,6 +8,7 @@
 #include "channel.h"
 #include "display.h"
 #include "measure.h"
+#include "service.h"
 #include "settings.h"
 #include "ui_model.h"
 
@@ -24,7 +25,6 @@ uint32_t lastTickMs = 0;
 bool dirty = true;
 
 const int kEepromAddr = 0;
-const uint16_t kServiceLoadMa = 200;
 const tc::Outputs kOff = {0, false};
 
 void loadSettings() {
@@ -48,12 +48,7 @@ bool drawsPower(const tc::Channel& ch) {
 }
 
 void serviceOutputs() {
-    for (uint8_t c = 0; c < tc::kChannels; c++) {
-        tc::Outputs o = kOff;
-        if (ui.svc[c] == tc::ServiceOut::Relay) o.relay = true;
-        else if (ui.svc[c] == tc::ServiceOut::Load) o.duty = tc::currentToDuty(kServiceLoadMa);
-        io::apply(c, o);
-    }
+    for (uint8_t c = 0; c < tc::kChannels; c++) io::apply(c, tc::serviceOutputs(ui.svc[c], meas[c]));
     io::setFan(ui.svcFan);
 }
 
