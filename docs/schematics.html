@@ -293,11 +293,11 @@
       <h2>Загальна схема</h2>
       <figure>
         <div class="schem-frame">
-          <svg class="schem" viewBox="0 0 1000 620" role="img" aria-label="Загальна схема: блок 5V через вимикач і запобіжник на шину +5V; канал n: реле і TP4056 заряджають акумулятор; стабілізатор струму LM324 з IRL540N, баластом і шунтом розряджає; сигнали V, I, T, SET, REL, DONE ідуть на Nanit; вентилятор, дільник шини на A7, кнопки, USB до Nanit">
+          <svg class="schem" viewBox="0 0 1000 620" role="img" aria-label="Загальна схема: живлення 5V (14V через XL4016) через вимикач і запобіжник на шину +5V; канал n: реле і TP4056 заряджають акумулятор; стабілізатор струму LM324 з IRL540N, баластом і шунтом розряджає; сигнали V, I, T, SET, REL, DONE ідуть на Nanit; вентилятор, дільник шини на A7, кнопки, USB до Nanit">
             <!-- power entry -->
             <rect x="20" y="15" width="90" height="70" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
-            <text x="65" y="46" text-anchor="middle" style="font-weight:600">Блок</text>
-            <text x="65" y="63" text-anchor="middle" class="lbl">5V 6A</text>
+            <text x="65" y="46" text-anchor="middle" style="font-weight:600">Живл.</text>
+            <text x="65" y="63" text-anchor="middle" class="lbl">14V→5V</text>
             <path class="w" d="M65 85 V96"/>
             <use href="#gnd" x="65" y="96"/>
             <path class="wp" d="M110 40 H116"/>
@@ -307,7 +307,7 @@
             <text x="116" y="16" class="lbl">вимикач</text>
             <path class="wp" d="M140 40 H146"/>
             <rect class="part" x="146" y="34" width="22" height="12" rx="2"/>
-            <text x="157" y="62" text-anchor="middle" class="lbl">5A</text>
+            <text x="157" y="62" text-anchor="middle" class="lbl">6A</text>
             <path d="M168 40 H970" stroke="var(--power)" stroke-width="4"/>
             <text x="300" y="30" style="fill:var(--power);font-weight:600">+5V шина</text>
 
@@ -503,51 +503,75 @@
       <h2>Етап 1 · Живлення і шини</h2>
       <figure>
         <div class="schem-frame">
-          <svg class="schem" viewBox="0 0 760 230" role="img" aria-label="Блок 5V через вимикач і запобіжник 5A на шину +5V; GND шина; USB-кабель від шин до Nanit">
-            <rect x="20" y="60" width="110" height="110" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
-            <text x="75" y="110" text-anchor="middle" style="font-weight:600">Блок</text>
-            <text x="75" y="128" text-anchor="middle" class="lbl">5V · 6A</text>
-            <text x="138" y="74" style="fill:var(--power);font-weight:700">+</text>
-            <text x="138" y="154" style="font-weight:700">−</text>
-            <path class="wp" d="M130 80 H170" stroke-width="3"/>
-            <circle class="dotp" cx="170" cy="80" r="3.5"/>
-            <path d="M170 80 L198 67" stroke="var(--power)" stroke-width="2"/>
-            <circle class="dotp" cx="202" cy="80" r="3.5"/>
-            <text x="186" y="55" text-anchor="middle" class="lbl">вимикач</text>
-            <path class="wp" d="M202 80 H220"/>
-            <rect class="part" x="220" y="72" width="36" height="16" rx="2"/>
-            <text x="238" y="106" text-anchor="middle" class="lbl">5A</text>
-            <path d="M256 80 H720" stroke="var(--power)" stroke-width="4"/>
-            <text x="300" y="68" style="fill:var(--power);font-weight:600">+5V шина</text>
-            <path d="M130 160 H720" stroke="currentColor" stroke-width="4"/>
-            <text x="300" y="150" style="font-weight:600">GND шина</text>
-            <text x="170" y="192" class="lbl">далі від шин: реле (7) · LM324 (4) · вентилятор (8)</text>
-            <circle class="dotp" cx="540" cy="80" r="4"/>
-            <path class="wp" d="M540 80 V88"/>
-            <rect class="part" x="531" y="88" width="18" height="26" rx="2"/>
-            <circle class="dots" cx="540" cy="120" r="3.5"/>
-            <path class="w" d="M540 114 V128"/>
-            <rect class="part" x="531" y="128" width="18" height="26" rx="2"/>
-            <path class="w" d="M540 154 V160"/>
-            <circle class="dot" cx="540" cy="160" r="4"/>
-            <text x="526" y="106" text-anchor="end" class="lbl">10k</text>
-            <text x="526" y="146" text-anchor="end" class="lbl">10k</text>
-            <path class="ws" d="M540 120 H600"/>
-            <circle cx="600" cy="120" r="4" fill="var(--gate)"/>
-            <text x="592" y="222" text-anchor="end" class="lbl" style="fill:var(--gate)">середина → A7 · P1_1 (NO POWER)</text>
-            <path class="ws" d="M600 120 V214" stroke-dasharray="3 3"/>
-            <circle class="dotp" cx="630" cy="80" r="4"/>
-            <path class="wp" d="M630 80 V108 H660"/>
-            <circle class="dot" cx="645" cy="160" r="4"/>
-            <path class="w" d="M645 160 V140 H660"/>
-            <rect x="660" y="95" width="80" height="60" rx="4" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
-            <text x="700" y="120" text-anchor="middle" style="font-weight:600">USB</text>
-            <text x="700" y="138" text-anchor="middle" class="lbl">→ Nanit</text>
-            <text x="745" y="222" text-anchor="end" class="lbl">тумблер Nanit — ON</text>
+          <svg class="schem" viewBox="0 0 860 255" role="img" aria-label="Блок монітора 14V через вимикач і запобіжник 3A на понижувач XL4016; вихід 5V через запобіжник 6A на шину +5V; TVS між шиною і GND; дільник шини на A7; USB-кабель від шин до Nanit">
+            <rect x="20" y="60" width="100" height="110" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
+            <text x="70" y="104" text-anchor="middle" style="font-weight:600">Блок</text>
+            <text x="70" y="122" text-anchor="middle" class="lbl">14V · 35W</text>
+            <text x="70" y="138" text-anchor="middle" class="lbl">(монітор)</text>
+            <text x="126" y="74" style="fill:var(--power);font-weight:700">+</text>
+            <text x="126" y="154" style="font-weight:700">−</text>
+            <path class="wp" d="M120 80 H150" stroke-width="3"/>
+            <circle class="dotp" cx="150" cy="80" r="3.5"/>
+            <path d="M150 80 L176 67" stroke="var(--power)" stroke-width="2"/>
+            <circle class="dotp" cx="180" cy="80" r="3.5"/>
+            <text x="165" y="55" text-anchor="middle" class="lbl">вимикач</text>
+            <path class="wp" d="M180 80 H194"/>
+            <rect class="part" x="194" y="72" width="32" height="16" rx="2"/>
+            <text x="210" y="106" text-anchor="middle" class="lbl">3A</text>
+            <path class="wp" d="M226 80 H260" stroke-width="3"/>
+            <text x="243" y="70" text-anchor="middle" class="lbl" style="fill:var(--power)">14V</text>
+            <rect x="260" y="60" width="120" height="110" rx="4" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <text x="320" y="104" text-anchor="middle" style="font-weight:600">XL4016</text>
+            <text x="320" y="122" text-anchor="middle" class="lbl">понижувач</text>
+            <text x="320" y="138" text-anchor="middle" class="lbl" style="fill:var(--power)">→ 5.05 V</text>
+            <text x="265" y="84" class="lbl" style="font-size:10px">IN+</text>
+            <text x="265" y="164" class="lbl" style="font-size:10px">IN−</text>
+            <text x="375" y="84" text-anchor="end" class="lbl" style="font-size:10px">OUT+</text>
+            <text x="375" y="164" text-anchor="end" class="lbl" style="font-size:10px">OUT−</text>
+            <path class="w" d="M120 160 H260" stroke-width="3"/>
+            <path class="wp" d="M380 80 H400" stroke-width="3"/>
+            <rect class="part" x="400" y="72" width="32" height="16" rx="2"/>
+            <text x="416" y="106" text-anchor="middle" class="lbl">6A</text>
+            <path d="M432 80 H840" stroke="var(--power)" stroke-width="4"/>
+            <text x="444" y="68" style="fill:var(--power);font-weight:600">+5V шина</text>
+            <path d="M380 160 H840" stroke="currentColor" stroke-width="4"/>
+            <text x="444" y="182" style="font-weight:600">GND шина</text>
+            <circle class="dotp" cx="480" cy="80" r="4"/>
+            <path class="wp" d="M480 80 V104"/>
+            <path d="M468 104 H492 M468 104 v-4 M492 104 v4" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path d="M480 104 L468 126 H492 Z" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <path class="w" d="M480 126 V160"/>
+            <circle class="dot" cx="480" cy="160" r="4"/>
+            <text x="498" y="112" class="lbl">TVS</text>
+            <text x="498" y="128" class="lbl">SMBJ5.0A</text>
+            <circle class="dotp" cx="620" cy="80" r="4"/>
+            <path class="wp" d="M620 80 V88"/>
+            <rect class="part" x="611" y="88" width="18" height="26" rx="2"/>
+            <circle class="dots" cx="620" cy="120" r="3.5"/>
+            <path class="w" d="M620 114 V128"/>
+            <rect class="part" x="611" y="128" width="18" height="26" rx="2"/>
+            <path class="w" d="M620 154 V160"/>
+            <circle class="dot" cx="620" cy="160" r="4"/>
+            <text x="606" y="106" text-anchor="end" class="lbl">10k</text>
+            <text x="606" y="146" text-anchor="end" class="lbl">10k</text>
+            <path class="ws" d="M620 120 H670"/>
+            <circle cx="670" cy="120" r="4" fill="var(--gate)"/>
+            <text x="662" y="222" text-anchor="end" class="lbl" style="fill:var(--gate)">середина → A7 · P1_1 (NO POWER)</text>
+            <path class="ws" d="M670 120 V214" stroke-dasharray="3 3"/>
+            <circle class="dotp" cx="710" cy="80" r="4"/>
+            <path class="wp" d="M710 80 V108 H740"/>
+            <circle class="dot" cx="725" cy="160" r="4"/>
+            <path class="w" d="M725 160 V140 H740"/>
+            <rect x="740" y="95" width="80" height="60" rx="4" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <text x="780" y="120" text-anchor="middle" style="font-weight:600">USB</text>
+            <text x="780" y="138" text-anchor="middle" class="lbl">→ Nanit</text>
+            <text x="845" y="222" text-anchor="end" class="lbl">тумблер Nanit — ON</text>
+            <text x="320" y="192" text-anchor="middle" class="lbl" style="fill:var(--power)">крутилку — на 5.05 V до шини!</text>
+            <text x="20" y="246" class="lbl">далі від шин: реле (7) · LM324 (4) · вентилятор (8)</text>
           </svg>
         </div>
       </figure>
-      <p class="parts"><b>Деталі:</b> блок 5V 6A, вимикач 6 A, тримач запобіжника + 5 A, 2 клемники (шина +5V і GND), USB-кабель (з боку блоку — лише червоний 5V і чорний GND), 2 × 10 kΩ (дільник шини → A7).</p>
+      <p class="parts"><b>Деталі:</b> блок від монітора 14V 35W + гніздо DC, вимикач 6 A, XL4016 з радіатором, 2 тримачі запобіжника (3 A і 6 A), TVS SMBJ5.0A, 2 клемники (шина +5V і GND), USB-кабель (з боку шини — лише червоний 5V і чорний GND), 2 × 10 kΩ (дільник шини → A7).</p>
     </section>
 
     <section>
@@ -940,9 +964,12 @@
         <table>
           <thead><tr><th>Позиція</th><th>К-сть</th><th>Навіщо</th></tr></thead>
           <tbody>
-            <tr><td>Блок живлення 5V 6A (30 W)</td><td class="mono">1</td><td>Живлення зарядок, реле, LM324, вентиляторів</td></tr>
-            <tr><td>Тумблер/кнопка-вимикач 6 A</td><td class="mono">1</td><td>Головний вимикач силового живлення</td></tr>
-            <tr><td>Тримач запобіжника + запобіжник 5 A</td><td class="mono">1</td><td>Захист від короткого замикання</td></tr>
+            <tr><td>Блок від монітора 14V 35W (<b>є</b>) + гніздо DC під його штекер</td><td class="mono">1</td><td>Вхідне живлення 14 V</td></tr>
+            <tr><td>Понижувач XL4016 (до 8 A) з радіатором</td><td class="mono">1</td><td>14 V → 5.05 V для шини: зарядки, реле, LM324, вентилятори, Nanit</td></tr>
+            <tr><td>Тумблер/кнопка-вимикач 6 A</td><td class="mono">1</td><td>Головний вимикач (на лінії 14 V)</td></tr>
+            <tr><td>Тримач запобіжника + запобіжник 3 A</td><td class="mono">1</td><td>Лінія 14 V до понижувача</td></tr>
+            <tr><td>Тримач запобіжника + запобіжник 6 A</td><td class="mono">1</td><td>Вихід 5 V → шина: захист від короткого замикання</td></tr>
+            <tr><td>TVS-діод SMBJ5.0A (або P6KE6.8A)</td><td class="mono">1</td><td>Якщо понижувач проб'ється і дасть 14 V — TVS закоротить шину, а не TP4056 і Nanit</td></tr>
             <tr><td>USB-кабель під Nanit (або USB-перехідник з клемами)</td><td class="mono">1</td><td>Живлення Nanit від +5V шини; для прошивки від'єднується</td></tr>
             <tr><td>Модуль TP4056 <b>без захисту</b> (контакти IN+ IN− B+ B−), Type-C</td><td class="mono">4 (+1)</td><td>Заряд. Версія без захисту: у неї B− = GND, як потрібно схемі</td></tr>
             <tr><td>Модуль реле 4 канали 5V з перемичкою H/L</td><td class="mono">1</td><td>Вмикання зарядок; перемичку ставимо на High</td></tr>

@@ -10,7 +10,7 @@ Successor of the 1-channel prototype in `../battery-capacity-tester` (kept uncha
 - `docs/build.html` — build guide: small schematics in soldering order, each stage with a check.
 - `design-log/` — design history.
 
-Power: 5V 6A PSU → master switch → 5A fuse → +5V/GND bus. Nanit runs from the bus over USB; its own Li-Po (switch ON) is a backup. Master switch off ⇒ relays open, LM324 unpowered, gates pulled low; firmware shows NO POWER and pauses.
+Power: 14V 35W monitor adapter → master switch → 3A fuse → XL4016 buck set to 5.05 V → 6A fuse → +5V/GND bus, SMBJ5.0A TVS across the bus. Nanit runs from the bus over USB; its own Li-Po (switch ON) is a backup. Master switch off ⇒ relays open, LM324 unpowered, gates pulled low; firmware shows NO POWER and pauses.
 
 ## Phases
 

@@ -14,3 +14,4 @@ Status meanings:
 | 002 | [Firmware architecture](002-firmware-architecture.md) | drafted | Core logic in hardware-free `lib/tester_core` (native Unity tests), thin Arduino layer; 1 s channel tick; NO POWER via 10k/10k bus divider on A7; service mode for build-stage checks. |
 | 003 | [clangd: default env for the compile database](003-clangd-default-env.md) | completed | `Arduino.h not found` in the IDE: compile db was exported for `native`. `default_envs = nanit_pro`; generated compile dbs untracked. |
 | 004 | [Phased build](004-phased-build.md) | drafted | Build one stage, flash that phase branch (`phase_1`…`phase_9`), check, continue. Phase 1 = power + bus + A7 sense + Nanit USB. |
+| 005 | [Power entry: 14V monitor adapter + XL4016 buck](005-power-14v-buck.md) | drafted | 5V 6A PSU replaced by 14V 35W monitor adapter → switch → 3A fuse → XL4016 at 5.05 V → 6A fuse → bus; SMBJ5.0A TVS on the bus. ~75 % adapter load at 4 channels. Firmware unchanged. |

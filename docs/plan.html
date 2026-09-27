@@ -296,7 +296,7 @@
           <thead><tr><th>Блок</th><th>Що робить</th><th>Живлення</th></tr></thead>
           <tbody>
             <tr><td>Nanit Pro</td><td>Мозок: міряє V, I, T кожного каналу, задає струм, вмикає зарядку, показує екрани, читає кнопки</td><td>USB від +5V шини; вбудований Li-Po (тумблер увімкнений) — резерв</td></tr>
-            <tr><td>Блок 5V 6A → вимикач → запобіжник 5A</td><td>Головне живлення всього силового</td><td>мережа</td></tr>
+            <tr><td>Блок монітора 14V 35W → вимикач → запобіжник 3A → XL4016 (5.05 V) → запобіжник 6A</td><td>Головне живлення всього силового</td><td>блок 14 V від мережі</td></tr>
             <tr><td>4 × TP4056 через модуль реле</td><td>Заряд кожного акумулятора струмом 1 A</td><td>+5V шина</td></tr>
             <tr><td>LM324 + 4 × IRL540N + шунти 1Ω</td><td>Стабілізатор струму розряду, 4 канали</td><td>+5V шина</td></tr>
             <tr><td>Вентилятори 5V</td><td>Обдув радіатора MOSFET і зарядок</td><td>+5V шина, вмикає Nanit</td></tr>
@@ -410,10 +410,10 @@
       <h2>Схема 2 · Заряд (одна з 4 однакових)</h2>
       <figure>
         <div class="schem-frame">
-          <svg class="schem" viewBox="0 0 760 300" role="img" aria-label="Заряд: блок 5V через вимикач і запобіжник на шину; реле каналу подає 5V на TP4056; TP4056 заряджає акумулятор; сигнал STDBY з TP4056 іде на Nanit">
+          <svg class="schem" viewBox="0 0 760 300" role="img" aria-label="Заряд: живлення 5V (14V через XL4016) через вимикач і запобіжник на шину; реле каналу подає 5V на TP4056; TP4056 заряджає акумулятор; сигнал STDBY з TP4056 іде на Nanit">
             <rect x="20" y="50" width="110" height="100" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
-            <text x="75" y="92" text-anchor="middle" style="font-weight:600">Блок</text>
-            <text x="75" y="110" text-anchor="middle" class="lbl">5V · 6A</text>
+            <text x="75" y="92" text-anchor="middle" style="font-weight:600">Живлення</text>
+            <text x="75" y="110" text-anchor="middle" class="lbl">14V→XL4016</text>
             <path class="w" d="M75 150 V165"/>
             <use href="#gnd" x="75" y="165"/>
 
@@ -424,7 +424,7 @@
             <text x="186" y="50" text-anchor="middle" class="lbl">вимикач</text>
             <path class="wp" d="M202 75 H220"/>
             <rect class="part" x="220" y="67" width="36" height="16" rx="2"/>
-            <text x="238" y="100" text-anchor="middle" class="lbl">5A</text>
+            <text x="238" y="100" text-anchor="middle" class="lbl">6A</text>
             <path class="wp" d="M256 75 H320"/>
             <circle class="dotp" cx="280" cy="75" r="4"/>
             <path class="wp" d="M280 75 V230"/>
@@ -702,7 +702,7 @@
           </tbody>
         </table>
       </div>
-      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">Струм від блоку: 4 зарядки × 1 A + реле 0.3 A + вентилятори ~0.4 A ≈ 4.7 A — блок на 6 A з запасом. Вентилятори вмикаються, коли будь-який канал розряджає струмом від 0.3 A або заряджає.</p>
+      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">Струм шини 5 V: 4 зарядки × 1 A + реле 0.3 A + вентилятори ~0.4 A ≈ 4.7 A ≈ 24 W. Від блока 14 V з ККД XL4016 ~90% — ≈ 26 W (1.9 A), це ~75% від 35 W. Якщо блок перегрівається, прошивка може обмежити одночасний заряд до 3 каналів (≈ 20 W). Вентилятори вмикаються, коли будь-який канал розряджає струмом від 0.3 A або заряджає.</p>
     </section>
 
     <section>
@@ -711,9 +711,12 @@
         <table>
           <thead><tr><th>Позиція</th><th>К-сть</th><th>Навіщо</th></tr></thead>
           <tbody>
-            <tr><td>Блок живлення 5V 6A (30 W)</td><td class="mono">1</td><td>Живлення зарядок, реле, LM324, вентиляторів</td></tr>
-            <tr><td>Тумблер/кнопка-вимикач 6 A</td><td class="mono">1</td><td>Головний вимикач силового живлення</td></tr>
-            <tr><td>Тримач запобіжника + запобіжник 5 A</td><td class="mono">1</td><td>Захист від короткого замикання</td></tr>
+            <tr><td>Блок від монітора 14V 35W (<b>є</b>) + гніздо DC під його штекер</td><td class="mono">1</td><td>Вхідне живлення 14 V</td></tr>
+            <tr><td>Понижувач XL4016 (до 8 A) з радіатором</td><td class="mono">1</td><td>14 V → 5.05 V для шини: зарядки, реле, LM324, вентилятори, Nanit</td></tr>
+            <tr><td>Тумблер/кнопка-вимикач 6 A</td><td class="mono">1</td><td>Головний вимикач (на лінії 14 V)</td></tr>
+            <tr><td>Тримач запобіжника + запобіжник 3 A</td><td class="mono">1</td><td>Лінія 14 V до понижувача</td></tr>
+            <tr><td>Тримач запобіжника + запобіжник 6 A</td><td class="mono">1</td><td>Вихід 5 V → шина: захист від короткого замикання</td></tr>
+            <tr><td>TVS-діод SMBJ5.0A (або P6KE6.8A)</td><td class="mono">1</td><td>Якщо понижувач проб'ється і дасть 14 V — TVS закоротить шину, а не TP4056 і Nanit</td></tr>
             <tr><td>USB-кабель під Nanit (або USB-перехідник з клемами)</td><td class="mono">1</td><td>Живлення Nanit від +5V шини; для прошивки від'єднується</td></tr>
             <tr><td>Модуль TP4056 <b>без захисту</b> (контакти IN+ IN− B+ B−), Type-C</td><td class="mono">4 (+1)</td><td>Заряд. Версія без захисту: у неї B− = GND, як потрібно схемі</td></tr>
             <tr><td>Модуль реле 4 канали 5V з перемичкою H/L</td><td class="mono">1</td><td>Вмикання зарядок; перемичку ставимо на High</td></tr>
