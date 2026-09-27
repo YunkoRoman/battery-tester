@@ -1,4 +1,4 @@
-<title>Тестер 4×18650 · збирання</title>
+<title>Тестер 4×18650 · схеми</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
@@ -278,8 +278,8 @@
 <div class="sheet">
   <header>
     <div class="title-block">
-      <h1>Тестер 4×18650 — збирання по етапах</h1>
-      <p>Паяй у цьому порядку. Кожен етап — маленька схема, список деталей і перевірка. Не переходь до наступного, поки перевірка не пройшла. Загальний план, піни й екрани — у <a href="plan.html">plan.html</a>, усі схеми й покупки на одній сторінці — у <a href="schematics.html">schematics.html</a>.</p>
+      <h1>Тестер 4×18650 — схеми і що купити</h1>
+      <p>Загальна схема всього тестера, детальні схеми по етапах пайки і список покупок. Кроки збирання й перевірки — у <a href="build.html">build.html</a>, піни, екрани й логіка — у <a href="plan.html">plan.html</a>.</p>
     </div>
     <div class="drawing-no">
       ПРОЄКТ <b>battery-tester-4ch</b><br>
@@ -290,24 +290,216 @@
 
   <main>
     <section>
-      <h2>Порядок</h2>
-      <ol class="checklist">
-        <li><span class="num">1</span><span><a href="#s1">Живлення і шини</a> — блок, вимикач, запобіжник, USB до Nanit</span></li>
-        <li><span class="num">2</span><span><a href="#s2">Кнопки</a> — ◀ OK ▶</span></li>
-        <li><span class="num">3</span><span><a href="#s3">Канал 1 · тримач, крокодили, вимір напруги</a></span></li>
-        <li><span class="num">4</span><span><a href="#s4">LM324 · живлення і завдання струму</a></span></li>
-        <li><span class="num">5</span><span><a href="#s5">Канал 1 · силове коло, MOSFET, шунт</a></span></li>
-        <li><span class="num">6</span><span><a href="#s6">Канал 1 · температура NTC</a></span></li>
-        <li><span class="num">7</span><span><a href="#s7">Реле і зарядка каналу 1</a></span></li>
-        <li><span class="num">8</span><span><a href="#s8">Вентилятор</a></span></li>
-        <li><span class="num">9</span><span><a href="#s9">Канали 2–4</a> — повторити етапи 3, 5, 6, 7</span></li>
-        <li><span class="num">10</span><span><a href="#service">Перевірки в сервісному режимі</a></span></li>
-      </ol>
-      <div class="warn"><b>Загальні правила:</b> силові кола (струм до 1 A) — силіконовий провід 18AWG, коротко, пайка; сигнальні — тонкий провід. Запобіжник ставиться до першого увімкнення. Паяй при вимкненому головному вимикачі й без акумуляторів. Тумблер Nanit — завжди увімкнений: Li-Po працює як резерв.</div>
+      <h2>Загальна схема</h2>
+      <figure>
+        <div class="schem-frame">
+          <svg class="schem" viewBox="0 0 1000 620" role="img" aria-label="Загальна схема: блок 5V через вимикач і запобіжник на шину +5V; канал n: реле і TP4056 заряджають акумулятор; стабілізатор струму LM324 з IRL540N, баластом і шунтом розряджає; сигнали V, I, T, SET, REL, DONE ідуть на Nanit; вентилятор, дільник шини на A7, кнопки, USB до Nanit">
+            <!-- power entry -->
+            <rect x="20" y="15" width="90" height="70" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
+            <text x="65" y="46" text-anchor="middle" style="font-weight:600">Блок</text>
+            <text x="65" y="63" text-anchor="middle" class="lbl">5V 6A</text>
+            <path class="w" d="M65 85 V96"/>
+            <use href="#gnd" x="65" y="96"/>
+            <path class="wp" d="M110 40 H116"/>
+            <circle class="dotp" cx="116" cy="40" r="3"/>
+            <path d="M116 40 L136 30" stroke="var(--power)" stroke-width="2"/>
+            <circle class="dotp" cx="140" cy="40" r="3"/>
+            <text x="116" y="16" class="lbl">вимикач</text>
+            <path class="wp" d="M140 40 H146"/>
+            <rect class="part" x="146" y="34" width="22" height="12" rx="2"/>
+            <text x="157" y="62" text-anchor="middle" class="lbl">5A</text>
+            <path d="M168 40 H970" stroke="var(--power)" stroke-width="4"/>
+            <text x="300" y="30" style="fill:var(--power);font-weight:600">+5V шина</text>
+
+            <!-- channel frame -->
+            <rect x="145" y="52" width="640" height="455" rx="8" fill="none" stroke="var(--rule-strong)" stroke-width="1.5" stroke-dasharray="6 5"/>
+            <text x="590" y="78" text-anchor="middle" class="lbl">канал n × 4 (піни — таблиця нижче)</text>
+
+            <!-- relay n -->
+            <rect x="150" y="60" width="100" height="90" rx="4" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <circle class="dotp" cx="175" cy="40" r="3.5"/>
+            <path class="wp" d="M175 40 V95"/>
+            <circle class="dotp" cx="175" cy="95" r="3"/>
+            <path d="M175 95 L205 83" stroke="var(--power)" stroke-width="2"/>
+            <circle class="dotp" cx="212" cy="95" r="3"/>
+            <path class="wp" d="M212 95 H280"/>
+            <text x="200" y="124" text-anchor="middle" style="font-weight:600">реле n</text>
+            <text x="200" y="140" text-anchor="middle" class="lbl">1 з 4</text>
+            <path class="ws" d="M200 150 V520"/>
+
+            <!-- TP4056 -->
+            <rect x="280" y="70" width="100" height="100" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
+            <text x="330" y="124" text-anchor="middle" style="font-weight:600">TP4056</text>
+            <text x="286" y="99" class="lbl">IN+</text>
+            <text x="286" y="155" class="lbl">IN−</text>
+            <text x="374" y="99" text-anchor="end" class="lbl">B+</text>
+            <text x="374" y="155" text-anchor="end" class="lbl">B−</text>
+            <path class="w" d="M280 150 H265 V158"/>
+            <use href="#gnd" x="265" y="158"/>
+            <path class="ws" d="M330 170 V520"/>
+
+            <!-- cell -->
+            <path d="M380 95 H716 V105" stroke="var(--power)" stroke-width="4" fill="none" stroke-linejoin="round"/>
+            <circle class="dotp" cx="450" cy="95" r="4"/>
+            <path d="M450 95 V200" stroke="var(--power)" stroke-width="4"/>
+            <line x1="426" y1="200" x2="474" y2="200" stroke="var(--power)" stroke-width="3"/>
+            <line x1="438" y1="212" x2="462" y2="212" stroke="currentColor" stroke-width="5"/>
+            <line x1="426" y1="224" x2="474" y2="224" stroke="var(--power)" stroke-width="3"/>
+            <line x1="438" y1="236" x2="462" y2="236" stroke="currentColor" stroke-width="5"/>
+            <text x="404" y="210" text-anchor="end" style="font-weight:600">АКБ n</text>
+            <path d="M450 236 V300" stroke="currentColor" stroke-width="4"/>
+            <path d="M380 150 H410 V300 H450" stroke="currentColor" stroke-width="4" fill="none" stroke-linejoin="round"/>
+            <circle class="dot" cx="450" cy="300" r="4"/>
+
+            <!-- discharge: ballast, MOSFET, shunt -->
+            <rect class="part" x="704" y="105" width="24" height="50" rx="2"/>
+            <text x="696" y="124" text-anchor="end">баласт</text>
+            <text x="696" y="140" text-anchor="end" class="lbl">1Ω 5W</text>
+            <path class="w" d="M716 155 V182 H708"/>
+            <line x1="708" y1="176" x2="708" y2="188" stroke="currentColor" stroke-width="3"/>
+            <line x1="708" y1="194" x2="708" y2="206" stroke="currentColor" stroke-width="3"/>
+            <line x1="708" y1="212" x2="708" y2="224" stroke="currentColor" stroke-width="3"/>
+            <line x1="698" y1="176" x2="698" y2="224" stroke="currentColor" stroke-width="2"/>
+            <path class="w" d="M708 218 H716 V256"/>
+            <path class="w" d="M716 200 V218"/>
+            <path d="M709 200 L717 195 L717 205 Z" fill="currentColor"/>
+            <text x="736" y="205">IRL540N</text>
+            <text x="736" y="221" class="lbl">радіатор</text>
+            <circle class="dot" cx="716" cy="253" r="3.5"/>
+            <rect class="part" x="704" y="256" width="24" height="50" rx="2"/>
+            <text x="696" y="280" text-anchor="end">шунт</text>
+            <text x="696" y="296" text-anchor="end" class="lbl">1Ω 5W</text>
+            <path d="M716 306 V330 H450 V300" stroke="currentColor" stroke-width="4" fill="none" stroke-linejoin="round"/>
+            <path class="w" d="M450 330 V342"/>
+            <use href="#gnd" x="450" y="342"/>
+
+            <!-- CC regulator -->
+            <path d="M580 160 L580 240 L660 200 Z" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <text x="586" y="185">+</text>
+            <text x="586" y="225">−</text>
+            <text x="590" y="152" class="lbl">¼ LM324</text>
+            <path class="ws" d="M660 200 H664"/>
+            <rect class="part" x="664" y="194" width="26" height="12" rx="2"/>
+            <text x="677" y="186" text-anchor="middle" class="lbl">220Ω</text>
+            <path class="ws" d="M690 200 H698"/>
+            <path class="w" d="M716 253 H570 V220 H580"/>
+            <path class="ws" d="M575 520 V180 H580"/>
+
+            <!-- sense lines -->
+            <path d="M716 253 H760 V520" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <circle cx="450" cy="190" r="3.5" fill="var(--sense)"/>
+            <path d="M450 190 H520 V520" stroke="var(--sense)" stroke-width="2" fill="none"/>
+
+            <!-- NTC -->
+            <path class="ws" d="M440 520 V480"/>
+            <rect class="part" x="431" y="440" width="18" height="40" rx="2"/>
+            <path class="w" d="M440 440 V430"/>
+            <circle cx="440" cy="430" r="3.5" fill="var(--sense)"/>
+            <path d="M440 430 H400 V520" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <path class="w" d="M440 430 H455"/>
+            <rect class="part" x="455" y="422" width="40" height="16" rx="2"/>
+            <line x1="452" y1="442" x2="498" y2="418" stroke="currentColor" stroke-width="1.5"/>
+            <path class="w" d="M495 430 H505 V440"/>
+            <use href="#gnd" x="505" y="440"/>
+            <text x="475" y="412" text-anchor="middle" class="lbl">NTC</text>
+            <path d="M470 422 L462 244" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+
+            <!-- buttons -->
+            <g>
+              <rect class="part" x="70" y="455" width="20" height="20" rx="3"/>
+              <rect class="part" x="100" y="455" width="20" height="20" rx="3"/>
+              <rect class="part" x="130" y="455" width="20" height="20" rx="3"/>
+              <path class="ws" d="M80 520 V475 M110 520 V475 M140 520 V475"/>
+              <text x="110" y="440" text-anchor="middle" class="lbl">кнопки → GND</text>
+            </g>
+
+            <!-- fan -->
+            <path class="wp" d="M830 40 V88"/>
+            <circle cx="830" cy="110" r="22" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <text x="830" y="114" text-anchor="middle" style="font-weight:600;font-size:11px">FAN</text>
+            <path class="w" d="M830 132 V182 H822"/>
+            <line x1="822" y1="176" x2="822" y2="188" stroke="currentColor" stroke-width="3"/>
+            <line x1="822" y1="194" x2="822" y2="206" stroke="currentColor" stroke-width="3"/>
+            <line x1="822" y1="212" x2="822" y2="224" stroke="currentColor" stroke-width="3"/>
+            <line x1="812" y1="176" x2="812" y2="224" stroke="currentColor" stroke-width="2"/>
+            <path class="w" d="M822 218 H830 V240"/>
+            <path class="w" d="M830 200 V218"/>
+            <path d="M823 200 L831 195 L831 205 Z" fill="currentColor"/>
+            <use href="#gnd" x="830" y="240"/>
+            <path class="ws" d="M800 520 V200 H812"/>
+            <path class="wp" d="M860 40 V70"/>
+            <line x1="848" y1="70" x2="872" y2="70" stroke="currentColor" stroke-width="3"/>
+            <path d="M848 92 L872 92 L860 72 Z" fill="currentColor"/>
+            <path class="w" d="M860 92 V150 H830"/>
+            <circle class="dot" cx="830" cy="150" r="3.5"/>
+            <text x="864" y="128" class="lbl">1N5819</text>
+            <text x="842" y="274" class="lbl">IRL540N №5</text>
+
+            <!-- bus sense divider -->
+            <circle class="dotp" cx="920" cy="40" r="3.5"/>
+            <path class="w" d="M920 40 V58"/>
+            <rect class="part" x="911" y="58" width="18" height="26" rx="2"/>
+            <path class="w" d="M920 84 V110"/>
+            <circle class="dots" cx="920" cy="100" r="3.5"/>
+            <rect class="part" x="911" y="110" width="18" height="26" rx="2"/>
+            <path class="w" d="M920 136 V144"/>
+            <use href="#gnd" x="920" y="144"/>
+            <text x="906" y="152" text-anchor="end" class="lbl">10k ×2</text>
+            <path class="ws" d="M920 100 H940 V520"/>
+
+            <!-- USB -->
+            <circle class="dotp" cx="970" cy="40" r="3.5"/>
+            <path class="wp" d="M970 40 V520"/>
+            <text x="984" y="300" transform="rotate(-90 984 300)" text-anchor="middle" class="lbl" style="fill:var(--power)">USB 5V → Nanit</text>
+
+            <!-- Nanit -->
+            <rect x="40" y="520" width="950" height="80" rx="8" fill="var(--tag-bg)" stroke="var(--rule-strong)" stroke-width="2"/>
+            <text x="52" y="590" style="font-weight:600">Nanit Pro</text>
+            <g fill="var(--gate)">
+              <circle cx="80" cy="520" r="3.5"/><circle cx="110" cy="520" r="3.5"/><circle cx="140" cy="520" r="3.5"/>
+              <circle cx="200" cy="520" r="3.5"/><circle cx="330" cy="520" r="3.5"/><circle cx="400" cy="520" r="3.5"/>
+              <circle cx="440" cy="520" r="3.5"/><circle cx="520" cy="520" r="3.5"/><circle cx="575" cy="520" r="3.5"/>
+              <circle cx="760" cy="520" r="3.5"/><circle cx="800" cy="520" r="3.5"/><circle cx="940" cy="520" r="3.5"/>
+              <circle cx="970" cy="520" r="3.5"/>
+            </g>
+            <g text-anchor="middle" style="font-size:11px">
+              <text x="80" y="538">◀</text><text x="110" y="538">OK</text><text x="140" y="538">▶</text>
+              <text x="200" y="538">REL</text><text x="330" y="538">DONE</text><text x="400" y="538">T</text>
+              <text x="440" y="538">NPWR</text><text x="520" y="538">V</text><text x="575" y="538">SET</text>
+              <text x="760" y="538">I</text><text x="800" y="538">FAN</text><text x="940" y="538">BUS</text>
+              <text x="970" y="538">USB</text>
+            </g>
+            <g text-anchor="middle" class="lbl" style="font-size:10px">
+              <text x="80" y="554">D14</text><text x="110" y="554">D15</text><text x="140" y="554">D43</text>
+              <text x="200" y="554">D24</text><text x="330" y="554">D28</text><text x="400" y="554">A3</text>
+              <text x="440" y="554">D31</text><text x="520" y="554">A0</text><text x="575" y="554">D6</text>
+              <text x="760" y="554">A2</text><text x="800" y="554">D10</text><text x="940" y="554">A7</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption>Показано один канал (у пунктирній рамці) — на платі їх 4 однакових, піни каналу 1. Товсті лінії — силові кола до 1 A, бірюзові — проводи вимірювання, помаранчеві — сигнали керування. Для простоти тут не показано: фільтр ШІМ 39k/10k/10µF на SET, підтяжку затвора 10k, 1k і 10nF у зворотному зв'язку LM324, R4/R5 і 100nF на вході V, 10k на входах I і T, 10k підтяжки входів реле, 220Ω на затворі вентилятора, живлення LM324 від +5V шини. Усе це є на схемах етапів нижче.</figcaption>
+        <div class="legend">
+          <span><i style="background:var(--power);height:4px"></i>силове «+»</span>
+          <span><i style="background:currentColor;height:4px"></i>силове повернення / GND</span>
+          <span><i style="background:var(--sense)"></i>вимірювання</span>
+          <span><i style="background:var(--gate)"></i>керування</span>
+        </div>
+      </figure>
+      <h2 style="margin-top:28px">Піни всіх каналів</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Канал</th><th>LM324 + / − / вихід</th><th>SET (фільтр)</th><th>V</th><th>I</th><th>T</th><th>Реле IN</th><th>DONE</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">1</td><td class="mono">3 / 2 / 1</td><td class="mono">D6 · P10_4</td><td class="mono">A0 · P10_2</td><td class="mono">A2 · P10_1</td><td class="mono">A3 · P7_1</td><td class="mono">IN1 ← D24 · P10_3</td><td class="mono">D28 · P7_3</td></tr>
+            <tr><td class="mono">2</td><td class="mono">5 / 6 / 7</td><td class="mono">D2 · P5_1</td><td class="mono">A1 · P5_2</td><td class="mono">A12 · P5_3</td><td class="mono">A4 · P7_2</td><td class="mono">IN2 ← D33 · P5_4</td><td class="mono">D22 · P6_4</td></tr>
+            <tr><td class="mono">3</td><td class="mono">10 / 9 / 8</td><td class="mono">D9 · P7_4</td><td class="mono">A13 · P6_3</td><td class="mono">A14 · P6_2</td><td class="mono">A11 · P4_1</td><td class="mono">IN3 ← D23 · P6_1</td><td class="mono">D25 · P3_2</td></tr>
+            <tr><td class="mono">4</td><td class="mono">12 / 13 / 14</td><td class="mono">D5 · P8_3</td><td class="mono">A9 · P2_2</td><td class="mono">A10 · P2_1</td><td class="mono">A8 · P2_4</td><td class="mono">IN4 ← D42 · P2_3</td><td class="mono">D30 · P3_3</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
-    <!-- ===================== 1 ===================== -->
-    <section id="s1">
+    <section>
       <h2>Етап 1 · Живлення і шини</h2>
       <figure>
         <div class="schem-frame">
@@ -356,16 +548,9 @@
         </div>
       </figure>
       <p class="parts"><b>Деталі:</b> блок 5V 6A, вимикач 6 A, тримач запобіжника + 5 A, 2 клемники (шина +5V і GND), USB-кабель (з боку блоку — лише червоний 5V і чорний GND), 2 × 10 kΩ (дільник шини → A7).</p>
-      <ol class="checklist">
-        <li><span class="num">1</span><span>Блок → вимикач → запобіжник → клемник +5V. Мінус блоку → клемник GND. Провід 18AWG.</span></li>
-        <li><span class="num">2</span><span>USB-кабель: розріж, червоний у +5V, чорний у GND, білий і зелений заізолюй.</span></li>
-        <li><span class="num">3</span><span>Дільник 10k/10k між +5V і GND, середня точка тонким проводом → A7 (P1_1). Так прошивка бачить, що блок вимкнено (NO POWER).</span></li>
-      </ol>
-      <p class="check"><b>Перевірка:</b> вимикач OFF — на шині 0 V. ON — між +5V і GND 5.0–5.2 V. Nanit вмикається від USB. Середня точка дільника ↔ GND ≈ 2.5 V.</p>
     </section>
 
-    <!-- ===================== 2 ===================== -->
-    <section id="s2">
+    <section>
       <h2>Етап 2 · Кнопки</h2>
       <figure>
         <div class="schem-frame">
@@ -402,11 +587,9 @@
         </div>
       </figure>
       <p class="parts"><b>Деталі:</b> 3 тактові кнопки 6×6, тонкий провід.</p>
-      <p class="check"><b>Перевірка:</b> мультиметр у режимі продзвонки між піном і GND: кнопка натиснута — дзвонить, відпущена — ні.</p>
     </section>
 
-    <!-- ===================== 3 ===================== -->
-    <section id="s3">
+    <section>
       <h2>Етап 3 · Канал 1 · тримач, крокодили, вимір напруги</h2>
       <figure>
         <div class="schem-frame">
@@ -466,15 +649,9 @@
         </div>
       </figure>
       <p class="parts"><b>Деталі:</b> тримач 18650, пара крокодилів на 18AWG, R4 і R5 по 10 kΩ, 100 nF.</p>
-      <ol class="checklist">
-        <li><span class="num">1</span><span>Крокодили — паралельно клемам тримача. Силові проводи від клем поки просто залиш (підключаться на етапі 5).</span></li>
-        <li><span class="num">2</span><span>Від тих самих клем — окремі тонкі проводи виміру. R4 і R5 — біля тримача, 100 nF — біля Nanit.</span></li>
-      </ol>
-      <p class="check"><b>Перевірка:</b> без акумулятора опір P10_2 ↔ GND ≈ 20 kΩ (R5 + R4). З акумулятором напруга P10_2 ↔ GND = напрузі на акумуляторі.</p>
     </section>
 
-    <!-- ===================== 4 ===================== -->
-    <section id="s4">
+    <section>
       <h2>Етап 4 · LM324 · живлення і завдання струму (канал 1)</h2>
       <figure>
         <div class="schem-frame">
@@ -536,16 +713,9 @@
         </div>
       </figure>
       <p class="parts"><b>Деталі:</b> LM324N у панельці DIP-14, 39 kΩ, 10 kΩ, 10 µF, 100 nF.</p>
-      <ol class="checklist">
-        <li><span class="num">1</span><span>Панелька на макетну плату (виїмкою вгору, як на малюнку). Мікросхему встав у панельку в кінці етапу.</span></li>
-        <li><span class="num">2</span><span>Пін 4 → +5V, пін 11 → GND, конденсатор 100 nF між ними впритул до панельки.</span></li>
-        <li><span class="num">3</span><span>Фільтр завдання: D6 (P10_4) → 39k → пін 3; від піна 3 до GND — 10k і 10 µF (мінус конденсатора — на GND).</span></li>
-      </ol>
-      <p class="check"><b>Перевірка:</b> вимикач ON — пін 4 ↔ пін 11 = 5 V. Nanit без прошивки тестера — пін 3 ≈ 0 V (підтяжка 10k працює).</p>
     </section>
 
-    <!-- ===================== 5 ===================== -->
-    <section id="s5">
+    <section>
       <h2>Етап 5 · Канал 1 · силове коло, MOSFET, шунт</h2>
       <figure>
         <div class="schem-frame">
@@ -618,18 +788,9 @@
         </div>
       </figure>
       <p class="parts"><b>Деталі:</b> IRL540N, баласт і шунт 1 Ω / 5 W, 220 Ω, 10 kΩ ×2, 1 kΩ, 10 nF, 100 nF, радіатор, ізолюючий набір TO-220, термопаста.</p>
-      <ol class="checklist">
-        <li><span class="num">1</span><span>MOSFET на радіатор через силіконову прокладку і втулку, з термопастою. Ніжки: ліва G, середня D, права S.</span></li>
-        <li><span class="num">2</span><span>Силове коло 18AWG: «+» (етап 3) → баласт → D; S → шунт → «−» (етап 3). Резистори 5 W піднято над платою.</span></li>
-        <li><span class="num">3</span><span>Затвор: пін 1 LM324 → 220 Ω → G; 10k від G до GND — біля MOSFET.</span></li>
-        <li><span class="num">4</span><span>Зворотний зв'язок: верх шунта → 1k → пін 2. Конденсатор 10 nF між пінами 1 і 2.</span></li>
-        <li><span class="num">5</span><span>Вимір струму: верх шунта → 10k → A2 (P10_1), 100 nF біля Nanit.</span></li>
-      </ol>
-      <p class="check"><b>Перевірка:</b> до акумулятора — опір між фланцем MOSFET і радіатором = ∞ (ізоляція ціла). Встав акумулятор, Nanit без прошивки тестера: на шунті 0 V — MOSFET закритий. Струм від прошивки перевіримо після заливки: 0.20 A → на шунті 0.20 V.</p>
     </section>
 
-    <!-- ===================== 6 ===================== -->
-    <section id="s6">
+    <section>
       <h2>Етап 6 · Канал 1 · температура NTC</h2>
       <figure>
         <div class="schem-frame">
@@ -657,11 +818,9 @@
         </div>
       </figure>
       <p class="parts"><b>Деталі:</b> NTC 10k B3950, 10 kΩ, термоусадка або каптон для кріплення до акумулятора.</p>
-      <p class="check"><b>Перевірка:</b> при 25 °C опір NTC ≈ 10 kΩ; якщо NTC_PWR = 5 V, на A3 ≈ 2.5 V. Затиснув NTC у пальцях — напруга на A3 падає.</p>
     </section>
 
-    <!-- ===================== 7 ===================== -->
-    <section id="s7">
+    <section>
       <h2>Етап 7 · Реле і зарядка каналу 1</h2>
       <figure>
         <div class="schem-frame">
@@ -720,17 +879,9 @@
         </div>
       </figure>
       <p class="parts"><b>Деталі:</b> модуль реле 4 канали (для всіх каналів одразу), TP4056 без захисту, 10 kΩ, тонкий провід на світлодіод.</p>
-      <ol class="checklist">
-        <li><span class="num">1</span><span>На модулі реле перемичку тригера — у положення <b>H</b>. DC+ → +5V, DC− → GND.</span></li>
-        <li><span class="num">2</span><span>IN1 ← D24 (P10_3), від IN1 до GND — 10k.</span></li>
-        <li><span class="num">3</span><span>COM1 ← +5V, NO1 → IN+ TP4056, IN− → GND. B+ і B− — 18AWG до клем тримача 1 (тих самих, що на етапі 3).</span></li>
-        <li><span class="num">4</span><span>На TP4056 знайди світлодіод STDBY (горить, коли заряджено; зазвичай зелений або синій). Тонкий провід від його контакту з боку мікросхеми → D28 (P7_3).</span></li>
-      </ol>
-      <p class="check"><b>Перевірка:</b> вимикач ON, Nanit без прошивки тестера — реле не клацає, на IN+ TP4056 0 V. Дротом з'єднай IN1 з +5V на секунду — реле клацає, на IN+ 5 V; з акумулятором на TP4056 загоряється червоний світлодіод (заряд).</p>
     </section>
 
-    <!-- ===================== 8 ===================== -->
-    <section id="s8">
+    <section>
       <h2>Етап 8 · Вентилятор</h2>
       <figure>
         <div class="schem-frame">
@@ -781,48 +932,44 @@
         </div>
       </figure>
       <p class="parts"><b>Деталі:</b> вентилятор(и) 5V, IRL540N, 1N5819, 220 Ω, 10 kΩ.</p>
-      <p class="check"><b>Перевірка:</b> з'єднай FAN-провід з +5V дротом — вентилятор крутиться, відпустив — зупиняється.</p>
     </section>
 
-    <!-- ===================== 9 ===================== -->
-    <section id="s9">
-      <h2>Етап 9 · Канали 2–4</h2>
-      <p style="margin:0 0 14px;max-width:70ch">Повтори для кожного каналу етапи 3, 5, 6 і 7 (у етапі 7 — лише TP4056 і проводи; модуль реле вже стоїть). Етап 4 не повторюється: мікросхема одна, у неї просто інші піни.</p>
+    <section>
+      <h2>Що купити</h2>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Канал</th><th>LM324 + / − / вихід</th><th>SET (фільтр)</th><th>V</th><th>I</th><th>T</th><th>Реле IN</th><th>DONE</th></tr></thead>
+          <thead><tr><th>Позиція</th><th>К-сть</th><th>Навіщо</th></tr></thead>
           <tbody>
-            <tr><td class="mono">1</td><td class="mono">3 / 2 / 1</td><td class="mono">D6 · P10_4</td><td class="mono">A0 · P10_2</td><td class="mono">A2 · P10_1</td><td class="mono">A3 · P7_1</td><td class="mono">IN1 ← D24 · P10_3</td><td class="mono">D28 · P7_3</td></tr>
-            <tr><td class="mono">2</td><td class="mono">5 / 6 / 7</td><td class="mono">D2 · P5_1</td><td class="mono">A1 · P5_2</td><td class="mono">A12 · P5_3</td><td class="mono">A4 · P7_2</td><td class="mono">IN2 ← D33 · P5_4</td><td class="mono">D22 · P6_4</td></tr>
-            <tr><td class="mono">3</td><td class="mono">10 / 9 / 8</td><td class="mono">D9 · P7_4</td><td class="mono">A13 · P6_3</td><td class="mono">A14 · P6_2</td><td class="mono">A11 · P4_1</td><td class="mono">IN3 ← D23 · P6_1</td><td class="mono">D25 · P3_2</td></tr>
-            <tr><td class="mono">4</td><td class="mono">12 / 13 / 14</td><td class="mono">D5 · P8_3</td><td class="mono">A9 · P2_2</td><td class="mono">A10 · P2_1</td><td class="mono">A8 · P2_4</td><td class="mono">IN4 ← D42 · P2_3</td><td class="mono">D30 · P3_3</td></tr>
+            <tr><td>Блок живлення 5V 6A (30 W)</td><td class="mono">1</td><td>Живлення зарядок, реле, LM324, вентиляторів</td></tr>
+            <tr><td>Тумблер/кнопка-вимикач 6 A</td><td class="mono">1</td><td>Головний вимикач силового живлення</td></tr>
+            <tr><td>Тримач запобіжника + запобіжник 5 A</td><td class="mono">1</td><td>Захист від короткого замикання</td></tr>
+            <tr><td>USB-кабель під Nanit (або USB-перехідник з клемами)</td><td class="mono">1</td><td>Живлення Nanit від +5V шини; для прошивки від'єднується</td></tr>
+            <tr><td>Модуль TP4056 <b>без захисту</b> (контакти IN+ IN− B+ B−), Type-C</td><td class="mono">4 (+1)</td><td>Заряд. Версія без захисту: у неї B− = GND, як потрібно схемі</td></tr>
+            <tr><td>Модуль реле 4 канали 5V з перемичкою H/L</td><td class="mono">1</td><td>Вмикання зарядок; перемичку ставимо на High</td></tr>
+            <tr><td>LM324N (DIP-14) + панелька DIP-14</td><td class="mono">1 + 1</td><td>4 стабілізатори струму в одній мікросхемі</td></tr>
+            <tr><td>Резистор 1 Ω 5 W (цементний)</td><td class="mono">8</td><td>4 шунти + 4 баласти — саме вони дають 1 A</td></tr>
+            <tr><td>IRL540N (або IRLZ44N)</td><td class="mono">1</td><td>Для вентилятора (4 вже є — на канали)</td></tr>
+            <tr><td>Радіатор алюмінієвий ~100×40×20 мм</td><td class="mono">1</td><td>Для 4 MOSFET</td></tr>
+            <tr><td>Ізолюючий набір TO-220 (прокладка + втулка) і термопаста</td><td class="mono">4</td><td>Фланці MOSFET — стоки, між собою не можна з'єднувати</td></tr>
+            <tr><td>NTC 10k B3950 з проводами</td><td class="mono">4</td><td>Температура акумуляторів</td></tr>
+            <tr><td>Резистори 39 kΩ / 1 kΩ / 10 kΩ</td><td class="mono">4 / 4 / ~20</td><td>Фільтр ШІМ, зворотний зв'язок, підтяжки, захист входів (10k частково є)</td></tr>
+            <tr><td>Конденсатори 10 µF 16V / 100 nF / 10 nF</td><td class="mono">4 / 12 / 4</td><td>Фільтр ШІМ, фільтр АЦП, стабільність LM324</td></tr>
+            <tr><td>Діод 1N5819</td><td class="mono">1</td><td>Захист MOSFET вентилятора</td></tr>
+            <tr><td>Тактові кнопки 6×6 мм</td><td class="mono">3</td><td>◀ OK ▶</td></tr>
+            <tr><td>Крокодили ізольовані червоні / чорні</td><td class="mono">4 / 4</td><td>Підключення акумуляторів без тримача</td></tr>
+            <tr><td>Силіконовий провід 18AWG червоний + чорний</td><td class="mono">по 2 м</td><td>Силові кола 1 A</td></tr>
+            <tr><td>Тонкий провід 24–26AWG</td><td class="mono">~5 м</td><td>Проводи вимірювання, сигнали</td></tr>
+            <tr><td>Макетна плата під пайку 7×9 см</td><td class="mono">2</td><td>Силова частина і LM324</td></tr>
+            <tr><td>Клемники гвинтові 2-pin 5.08 мм</td><td class="mono">~12</td><td>Акумулятори, блок, вентилятори</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="check"><b>Перевірка:</b> ті самі перевірки, що в етапах 3, 5, 6, 7 — для кожного каналу окремо. Усі 4 MOSFET на спільному радіаторі: опір між будь-якими двома фланцями = ∞.</p>
-    </section>
-    <section id="service">
-      <h2>Перевірки в сервісному режимі</h2>
-      <p style="margin:0 0 14px;max-width:70ch">Утримуй OK під час увімкнення — відкриється SERVICE MODE. ◀ ▶ — вибір рядка, OK — перемикає вихід рядка (OFF → RELAY → LOAD 0.20 A → OFF; останній рядок — вентилятор). Утримання OK — вихід, усі виходи вимикаються.</p>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>Етап</th><th>Що дивитися на екрані</th><th>Норма</th></tr></thead>
-          <tbody>
-            <tr><td class="mono">1</td><td>BUS у нижньому рядку</td><td>4.9–5.2 V; вимикач OFF — на звичайних екранах NO POWER</td></tr>
-            <tr><td class="mono">2</td><td>◀ ▶ рухають виділення рядка</td><td>кожна кнопка реагує на одне натискання</td></tr>
-            <tr><td class="mono">3</td><td>V свого каналу</td><td>= мультиметру на клемах ±0.02 V; без акумулятора 0.00</td></tr>
-            <tr><td class="mono">4–5</td><td>LOAD на своєму каналі, I</td><td>0.18–0.22 A; мультиметр на шунті 0.18–0.22 V</td></tr>
-            <tr><td class="mono">6</td><td>T свого каналу</td><td>кімнатна ±3 °C; «--» = NTC не підключений</td></tr>
-            <tr><td class="mono">7</td><td>RELAY на своєму каналі, символ D</td><td>реле клацає, червоний LED TP4056; D з'являється, коли акумулятор повний</td></tr>
-            <tr><td class="mono">8</td><td>рядок FAN → OK</td><td>вентилятор вмикається / вимикається</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">Вже є: 4 × IRL540N, 4 тримачі 18650, вентилятори 5V, резистори 10 kΩ і 220 Ω. Резистори 10 Ω / 10 W у новій схемі не потрібні — лишаються в запасі.</p>
     </section>
   </main>
 
   <footer>
-    <span>battery-tester-4ch · збирання</span>
-    <span>план і екрани: plan.html</span>
+    <span>battery-tester-4ch · схеми</span>
+    <span>збирання: build.html · план: plan.html</span>
   </footer>
 </div>
