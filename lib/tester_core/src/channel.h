@@ -35,6 +35,7 @@ const float kDeadVolts = 2.0f;
 const uint16_t kBadRiMilliOhm = 250;
 const float kHotChargeC = 45.0f;
 const float kHotAnyC = 55.0f;
+const float kStartMaxC = 40.0f;  // a cell must be cooler than this to start
 const uint32_t kRestSeconds = 600;
 const uint32_t kChargeTimeoutSeconds = 4UL * 3600UL;
 const uint32_t kMinDischargeSeconds = 300;

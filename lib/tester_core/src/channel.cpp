@@ -61,6 +61,14 @@ bool Channel::start() {
         fail(Fault::Dead);
         return true;
     }
+    if (lastT_ == kTempInvalid) {
+        fail(Fault::SensorError);
+        return true;
+    }
+    if (lastT_ >= kStartMaxC) {
+        fail(Fault::Hot);
+        return true;
+    }
     enter(settings_.mode == Mode::Discharge ? Stage::RiTest : Stage::Charge);
     return true;
 }

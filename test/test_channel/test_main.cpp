@@ -314,6 +314,29 @@ void test_done_survives_cell_swap() {
     TEST_ASSERT_EQUAL_UINT8(0, o.duty);
 }
 
+void test_start_refused_on_warm_cell() {
+    Channel ch;
+    ch.tick(M(3.8f, 0.0f, 40.0f));
+    TEST_ASSERT_TRUE(ch.start());
+    TEST_ASSERT_EQUAL(Fault::Hot, ch.fault());
+    Outputs o = ch.tick(M(3.8f, 0.0f, 40.0f));
+    TEST_ASSERT_FALSE(o.relay);
+}
+
+void test_start_allowed_just_below_40c() {
+    Channel ch;
+    ch.tick(M(3.8f, 0.0f, 39.9f));
+    TEST_ASSERT_TRUE(ch.start());
+    TEST_ASSERT_EQUAL(Stage::Charge, ch.stage());
+}
+
+void test_start_refused_without_ntc() {
+    Channel ch;
+    ch.tick(M(3.8f, 0.0f, kTempInvalid));
+    TEST_ASSERT_TRUE(ch.start());
+    TEST_ASSERT_EQUAL(Fault::SensorError, ch.fault());
+}
+
 int main(int, char**) {
     UNITY_BEGIN();
     RUN_TEST(test_insert_cell_goes_idle_and_back_empty);
@@ -339,5 +362,8 @@ int main(int, char**) {
     RUN_TEST(test_settings_locked_while_running);
     RUN_TEST(test_stop_turns_everything_off);
     RUN_TEST(test_done_survives_cell_swap);
+    RUN_TEST(test_start_refused_on_warm_cell);
+    RUN_TEST(test_start_allowed_just_below_40c);
+    RUN_TEST(test_start_refused_without_ntc);
     return UNITY_END();
 }
