@@ -3,6 +3,7 @@
 4-channel 18650 capacity tester on a Nanit Pro (ATmega2560): charge (TP4056), constant-current discharge 0.1–1.0 A (LM324 + IRL540N), capacity / internal resistance / temperature, bad-cell rejection.
 
 - `docs/phase_1.html` — phase 1: schematic, assembly, flashing, expected screen, checks
+- `docs/layout.html` — physical layout on a 400×280 mm board: 3D view, top-view template, side section, mounting, cover
 - `docs/schematics.html` — overall schematic, per-stage schematics, shopping list
 - `docs/build.html` — soldering stages with checks
 - `docs/plan.html` — pins, screens, cycle logic

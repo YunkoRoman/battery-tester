@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Компонування тестера</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --paper:#f4efe4;
+    --paper-raised:#faf6ec;
+    --ink:#2a251d;
+    --ink-soft:#5a5347;
+    --rule:#d8cdb6;
+    --rule-strong:#b7a98a;
+    --power:#a3211f;
+    --gnd:#2a251d;
+    --gate:#c1631f;
+    --sense:#1f6e6b;
+    --tag-bg:#ece2c9;
+    --code-bg:#eee5cf;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1c1a15;
+      --paper-raised:#242019;
+      --ink:#f1ead9;
+      --ink-soft:#b6ab93;
+      --rule:#4a4334;
+      --rule-strong:#6b6146;
+      --power:#e2695f;
+      --gnd:#f1ead9;
+      --gate:#e8a85e;
+      --sense:#6bc2bd;
+      --tag-bg:#332c1f;
+      --code-bg:#2b2519;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1c1a15;
+    --paper-raised:#242019;
+    --ink:#f1ead9;
+    --ink-soft:#b6ab93;
+    --rule:#4a4334;
+    --rule-strong:#6b6146;
+    --power:#e2695f;
+    --gnd:#f1ead9;
+    --gate:#e8a85e;
+    --sense:#6bc2bd;
+    --tag-bg:#332c1f;
+    --code-bg:#2b2519;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Archivo',system-ui,sans-serif;
+    padding-inline:20px;
+    padding-block:48px;
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-attachment:local;
+  }
+  .sheet{
+    max-width:920px;
+    margin-inline:auto;
+    background:var(--paper-raised);
+    border:1px solid var(--rule-strong);
+    box-shadow:0 1px 0 var(--rule-strong);
+  }
+  header{
+    padding:28px 32px 22px;
+    border-bottom:2px solid var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .title-block h1{
+    margin:0;
+    font-size:clamp(1.5rem, 3vw, 2.1rem);
+    font-weight:800;
+    letter-spacing:-0.01em;
+    text-wrap:balance;
+  }
+  .title-block p{
+    margin:4px 0 0;
+    color:var(--ink-soft);
+    font-size:0.95rem;
+    max-width:60ch;
+  }
+  .drawing-no{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:var(--ink-soft);
+    text-align:right;
+    line-height:1.6;
+  }
+  .drawing-no b{ color:var(--ink); font-weight:600; }
+
+  main{ padding:28px 32px 36px; }
+
+  section{ margin-block-end:40px; }
+  section:last-child{ margin-block-end:0; }
+
+  h2{
+    font-size:0.78rem;
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--rule);
+  }
+
+  figure{ margin:0; }
+  .schem-frame{
+    background:var(--paper);
+    border:1px solid var(--rule-strong);
+    padding:12px;
+  }
+  svg{ display:block; width:100%; height:auto; color:var(--ink); }
+
+  .schem-frame{ overflow-x:auto; }
+  svg.schem{ min-width:620px; }
+  svg.schem text{ font-family:'JetBrains Mono',monospace; font-size:13px; fill:var(--ink); }
+  svg.schem .lbl{ fill:var(--ink-soft); font-size:12px; }
+  svg.schem .w{ stroke:currentColor; stroke-width:2; fill:none; }
+  svg.schem .wp{ stroke:var(--power); stroke-width:2; fill:none; }
+  svg.schem .ws{ stroke:var(--gate); stroke-width:2; fill:none; }
+  svg.schem .part{ fill:var(--paper-raised); stroke:currentColor; stroke-width:2; }
+  svg.schem .dot{ fill:currentColor; }
+  svg.schem .dotp{ fill:var(--power); }
+  svg.schem .dots{ fill:var(--gate); }
+
+  .to220{ display:grid; grid-template-columns:200px 1fr; gap:24px; align-items:center; }
+  svg.to220-svg{ max-width:200px; }
+  svg.to220-svg text{ font-family:'JetBrains Mono',monospace; fill:var(--ink); }
+  svg.to220-svg .t-sm{ font-size:11px; fill:var(--ink-soft); }
+  svg.to220-svg .t-part{ font-size:14px; font-weight:700; }
+  svg.to220-svg .t-pin{ font-size:16px; font-weight:700; }
+  @media (max-width:640px){ .to220{ grid-template-columns:1fr; } }
+  figcaption{
+    margin-top:10px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    max-width:70ch;
+  }
+
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 22px;
+    margin-top:14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .legend i{ width:18px; height:3px; display:inline-block; border-radius:1px; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.88rem;
+  }
+  caption{ text-align:left; margin-bottom:8px; }
+  th, td{
+    text-align:left;
+    padding:9px 12px;
+    border-bottom:1px solid var(--rule);
+    vertical-align:top;
+  }
+  th{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+    border-bottom:1px solid var(--rule-strong);
+  }
+  td.mono, .pin{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85rem;
+  }
+  .tbl-wrap{ overflow-x:auto; }
+
+  .pinmap{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--rule-strong);
+    border:1px solid var(--rule-strong);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.82rem;
+  }
+  .pinmap > div{
+    background:var(--paper-raised);
+    padding:12px 14px;
+  }
+  .pinmap .head{
+    background:var(--tag-bg);
+    font-size:0.7rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  .pinmap .port{ font-weight:700; }
+  .pinmap .gate{ color:var(--gate); }
+  .pinmap .sense{ color:var(--sense); }
+
+  .checklist{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .checklist li{
+    display:flex; gap:12px; align-items:flex-start;
+    font-size:0.92rem; line-height:1.5;
+  }
+  .checklist .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    color:var(--paper-raised);
+    background:var(--ink);
+    width:22px; height:22px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+
+  .warn{
+    margin-top:16px;
+    padding:12px 14px;
+    background:var(--tag-bg);
+    border-left:3px solid var(--power);
+    font-size:0.85rem;
+    line-height:1.5;
+  }
+  .warn b{ color:var(--power); }
+
+  code{
+    font-family:'JetBrains Mono',monospace;
+    background:var(--code-bg);
+    padding:0.1em 0.4em;
+    border-radius:3px;
+    font-size:0.92em;
+  }
+
+  footer{
+    padding:16px 32px 26px;
+    border-top:1px solid var(--rule);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width:640px){
+    .pinmap{ grid-template-columns:1fr; }
+    header{ flex-direction:column; align-items:flex-start; }
+    .drawing-no{ text-align:left; }
+  }
+
+  .parts, .check{ margin:14px 0 0; font-size:0.9rem; line-height:1.5; max-width:74ch; }
+  .check{ padding:10px 14px; background:var(--code-bg); border-left:3px solid var(--sense); }
+  .checklist{ margin-top:14px; }
+  a{ color:var(--sense); }
+
+  .screens{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+  .screen svg{ max-width:320px; border-radius:6px; border:6px solid #1a1d1f; }
+  .screen svg text{ font-family:'JetBrains Mono',monospace; }
+  .screen figcaption{ margin-top:6px; }
+
+  .viewframe{ background:var(--paper); border:1px solid var(--rule-strong); padding:12px; overflow-x:auto; }
+  svg.top{ min-width:640px; color:var(--ink); }
+  svg.iso{ min-width:640px; }
+  svg.side{ min-width:560px; color:var(--ink); }
+  svg text{ font-family:'JetBrains Mono',monospace; }
+  svg .badge{ fill:var(--ink); stroke:var(--paper-raised); stroke-width:1.5; }
+  svg .badge-t{ fill:var(--paper-raised); font-size:9.5px; font-weight:700; }
+  svg .lead{ stroke:var(--ink); stroke-width:0.8; }
+  svg .leaddot{ fill:var(--ink); }
+  svg .note{ fill:var(--ink); font-size:12px; }
+  svg.iso .note{ font-size:10px; }
+  svg .dim{ fill:var(--ink-soft); font-size:13px; }
+  svg .zone{ font-size:13px; font-weight:600; }
+  .bdg{ display:inline-flex; width:22px; height:22px; border-radius:50%; background:var(--ink); color:var(--paper-raised);
+        align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; }
+  .cols{ display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media (max-width:700px){ .cols{ grid-template-columns:1fr; } }
+  .cols h3{ font-size:0.95rem; margin:0 0 8px; }
+  .cols ul{ margin:0; padding-left:18px; font-size:0.9rem; line-height:1.55; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header>
+    <div class="title-block">
+      <h1>Компонування на дошці</h1>
+      <p>Без 3D-принтера: фанера або МДФ як основа. Паяне (канали, LM324, кнопки) — на макетках, модулі — на стійках, задня силова частина — під кришкою з оргскла, акумулятори й екран — спереду, відкриті.</p>
+    </div>
+    <div class="drawing-no">
+      ОСНОВА <b>400 × 280 мм</b><br>
+      ВИСОТА <b>≈ 90 мм</b><br>
+      РОЗМІРИ <b>орієнтовні</b>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Як виглядатиме</h2>
+      <figure>
+        <div class="viewframe"><svg class="iso" viewBox="-272 -105 729 487" role="img" aria-label="Ізометричний вигляд тестера на дошці"><polygon points="-242.5,152.0 103.9,352.0 103.9,340.0 -242.5,140.0" fill="#a98555" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="346.4,212.0 103.9,352.0 103.9,340.0 346.4,200.0" fill="#c29f6c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="0.0,0.0 346.4,200.0 103.9,340.0 -242.5,140.0" fill="#d9b98a" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><line x1="-121.2" y1="70.0" x2="225.2" y2="270.0" stroke="#7a5a30" stroke-width="1" stroke-dasharray="4 3"/><polyline points="-65.0,7.0 -26.0,29.5" fill="none" stroke="#222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><polyline points="65.0,77.0 84.9,78.5" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><polyline points="73.6,125.0 102.2,118.5" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><polyline points="69.3,127.5 134.2,197.0" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><polyline points="71.0,148.5 43.3,164.5 -98.7,92.5 -111.7,100.0" fill="none" stroke="#c0392b" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><polyline points="-175.8,141.0 -181.9,144.5 -69.3,209.5 56.3,167.0 149.0,213.5" fill="none" stroke="#2a2a2a" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><polyline points="-172.3,143.0 -175.8,145.0 21.7,212.0" fill="none" stroke="#1f8a86" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><polyline points="86.6,157.5 58.9,173.5 -71.0,108.5 -84.0,116.0" fill="none" stroke="#c0392b" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><polyline points="-148.1,157.0 -154.2,160.5 -67.5,208.5 58.9,165.5 149.8,213.0" fill="none" stroke="#2a2a2a" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><polyline points="-144.6,159.0 -147.2,160.5 18.2,214.0" fill="none" stroke="#1f8a86" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><polyline points="102.2,166.5 74.5,182.5 -43.3,124.5 -56.3,132.0" fill="none" stroke="#c0392b" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><polyline points="-120.4,173.0 -126.4,176.5 -65.8,207.5 61.5,164.0 150.7,212.5" fill="none" stroke="#2a2a2a" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><polyline points="-116.9,175.0 -118.6,176.0 14.7,216.0" fill="none" stroke="#1f8a86" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><polyline points="117.8,175.5 90.1,191.5 -15.6,140.5 -28.6,148.0" fill="none" stroke="#c0392b" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><polyline points="-92.7,189.0 -98.7,192.5 -64.1,206.5 64.1,162.5 151.6,212.0" fill="none" stroke="#2a2a2a" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><polyline points="-89.2,191.0 -90.1,191.5 11.3,218.0" fill="none" stroke="#1f8a86" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><polyline points="57.2,126.5 8.7,154.5 64.1,194.5" fill="none" stroke="#555" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><polygon points="-71.0,56.0 15.6,106.0 15.6,76.0 -71.0,26.0" fill="#9ea3a8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="86.6,65.0 15.6,106.0 15.6,76.0 86.6,35.0" fill="#b3b7bc" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="0.0,-15.0 86.6,35.0 15.6,76.0 -71.0,26.0" fill="#c9ccd0" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="76.2,84.0 102.2,99.0 102.2,77.0 76.2,62.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="121.2,88.0 102.2,99.0 102.2,77.0 121.2,66.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="95.3,51.0 121.2,66.0 102.2,77.0 76.2,62.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="85.7,62.5 101.3,71.5 101.3,67.5 85.7,58.5" fill="#9d2a21" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="111.7,65.5 101.3,71.5 101.3,67.5 111.7,61.5" fill="#b93328" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="96.1,52.5 111.7,61.5 101.3,67.5 85.7,58.5" fill="#d23b2f" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="57.2,95.0 86.6,112.0 86.6,98.0 57.2,81.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="98.7,105.0 86.6,112.0 86.6,98.0 98.7,91.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="69.3,74.0 98.7,91.0 86.6,98.0 57.2,81.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="29.4,111.0 64.1,131.0 64.1,115.0 29.4,95.0" fill="#b8761f" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="83.1,120.0 64.1,131.0 64.1,115.0 83.1,104.0" fill="#cf8a2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="48.5,84.0 83.1,104.0 64.1,115.0 29.4,95.0" fill="#e39a3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-188.8,134.0 -169.7,145.0 -169.7,137.0 -188.8,126.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-102.2,106.0 -169.7,145.0 -169.7,137.0 -102.2,98.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-121.2,87.0 -102.2,98.0 -169.7,137.0 -188.8,126.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-181.9,130.0 -166.3,139.0 -166.3,121.0 -181.9,112.0" fill="#1e6a41" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-109.1,106.0 -166.3,139.0 -166.3,121.0 -109.1,88.0" fill="#257a4c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-124.7,79.0 -109.1,88.0 -166.3,121.0 -181.9,112.0" fill="#2c8a57" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="93.5,116.0 158.5,153.5 158.5,151.5 93.5,114.0" fill="#2a5a98" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="206.1,126.0 158.5,153.5 158.5,151.5 206.1,124.0" fill="#3268ae" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="141.2,86.5 206.1,124.0 158.5,151.5 93.5,114.0" fill="#3a78c9" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="123.8,100.5 136.8,108.0 136.8,93.0 123.8,85.5" fill="#1f4f84" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="153.3,98.5 136.8,108.0 136.8,93.0 153.3,83.5" fill="#275f9c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="140.3,76.0 153.3,83.5 136.8,93.0 123.8,85.5" fill="#2f6fb3" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="139.4,109.5 152.4,117.0 152.4,102.0 139.4,94.5" fill="#1f4f84" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="168.9,107.5 152.4,117.0 152.4,102.0 168.9,92.5" fill="#275f9c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="155.9,85.0 168.9,92.5 152.4,102.0 139.4,94.5" fill="#2f6fb3" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="155.0,118.5 168.0,126.0 168.0,111.0 155.0,103.5" fill="#1f4f84" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="184.5,116.5 168.0,126.0 168.0,111.0 184.5,101.5" fill="#275f9c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="171.5,94.0 184.5,101.5 168.0,111.0 155.0,103.5" fill="#2f6fb3" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="170.6,127.5 183.6,135.0 183.6,120.0 170.6,112.5" fill="#1f4f84" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="200.1,125.5 183.6,135.0 183.6,120.0 200.1,110.5" fill="#275f9c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="187.1,103.0 200.1,110.5 183.6,120.0 170.6,112.5" fill="#2f6fb3" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-161.1,150.0 -142.0,161.0 -142.0,153.0 -161.1,142.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-74.5,122.0 -142.0,161.0 -142.0,153.0 -74.5,114.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-93.5,103.0 -74.5,114.0 -142.0,153.0 -161.1,142.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-154.2,146.0 -138.6,155.0 -138.6,137.0 -154.2,128.0" fill="#8f2a4f" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-81.4,122.0 -138.6,155.0 -138.6,137.0 -81.4,104.0" fill="#a8325d" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-97.0,95.0 -81.4,104.0 -138.6,137.0 -154.2,128.0" fill="#c23a6b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="64.1,137.0 77.9,145.0 77.9,143.0 64.1,135.0" fill="#1f4f84" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="100.5,132.0 77.9,145.0 77.9,143.0 100.5,130.0" fill="#275f9c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="86.6,122.0 100.5,130.0 77.9,143.0 64.1,135.0" fill="#2f6fb3" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="77.1,132.5 82.3,135.5 82.3,134.0 77.1,131.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="87.5,132.5 82.3,135.5 82.3,134.0 87.5,131.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="82.3,128.0 87.5,131.0 82.3,134.0 77.1,131.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-213.9,150.5 -208.7,153.5 -208.7,147.5 -213.9,144.5" fill="#9d2a21" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-194.9,145.5 -208.7,153.5 -208.7,147.5 -194.9,139.5" fill="#b93328" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-200.1,136.5 -194.9,139.5 -208.7,147.5 -213.9,144.5" fill="#d23b2f" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="79.7,146.0 93.5,154.0 93.5,152.0 79.7,144.0" fill="#1f4f84" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="116.0,141.0 93.5,154.0 93.5,152.0 116.0,139.0" fill="#275f9c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="102.2,131.0 116.0,139.0 93.5,152.0 79.7,144.0" fill="#2f6fb3" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="92.7,141.5 97.9,144.5 97.9,143.0 92.7,140.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="103.1,141.5 97.9,144.5 97.9,143.0 103.1,140.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="97.9,137.0 103.1,140.0 97.9,143.0 92.7,140.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-133.4,166.0 -114.3,177.0 -114.3,169.0 -133.4,158.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-46.8,138.0 -114.3,177.0 -114.3,169.0 -46.8,130.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-65.8,119.0 -46.8,130.0 -114.3,169.0 -133.4,158.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-126.4,162.0 -110.9,171.0 -110.9,153.0 -126.4,144.0" fill="#244f8a" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-53.7,138.0 -110.9,171.0 -110.9,153.0 -53.7,120.0" fill="#2d61a8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-69.3,111.0 -53.7,120.0 -110.9,153.0 -126.4,144.0" fill="#3571c4" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="176.7,160.0 185.3,165.0 185.3,125.0 176.7,120.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="220.0,145.0 185.3,165.0 185.3,125.0 220.0,105.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="211.3,100.0 220.0,105.0 185.3,125.0 176.7,120.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><ellipse cx="202.6" cy="135.0" rx="12.5" ry="16.0" fill="#555" stroke="#888" stroke-width="0.6" transform="rotate(-30 202.6 135.0)"/><polygon points="-205.2,155.5 -200.1,158.5 -200.1,152.5 -205.2,149.5" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-186.2,150.5 -200.1,158.5 -200.1,152.5 -186.2,144.5" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-191.4,141.5 -186.2,144.5 -200.1,152.5 -205.2,149.5" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="95.3,155.0 109.1,163.0 109.1,161.0 95.3,153.0" fill="#1f4f84" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="131.6,150.0 109.1,163.0 109.1,161.0 131.6,148.0" fill="#275f9c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="117.8,140.0 131.6,148.0 109.1,161.0 95.3,153.0" fill="#2f6fb3" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="108.3,150.5 113.4,153.5 113.4,152.0 108.3,149.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="118.6,150.5 113.4,153.5 113.4,152.0 118.6,149.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="113.4,146.0 118.6,149.0 113.4,152.0 108.3,149.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-186.2,166.5 -181.0,169.5 -181.0,163.5 -186.2,160.5" fill="#9d2a21" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-167.1,161.5 -181.0,169.5 -181.0,163.5 -167.1,155.5" fill="#b93328" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-172.3,152.5 -167.1,155.5 -181.0,163.5 -186.2,160.5" fill="#d23b2f" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-105.7,182.0 -86.6,193.0 -86.6,185.0 -105.7,174.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-19.1,154.0 -86.6,193.0 -86.6,185.0 -19.1,146.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-38.1,135.0 -19.1,146.0 -86.6,185.0 -105.7,174.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-98.7,178.0 -83.1,187.0 -83.1,169.0 -98.7,160.0" fill="#9e6616" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-26.0,154.0 -83.1,187.0 -83.1,169.0 -26.0,136.0" fill="#bb791b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-41.6,127.0 -26.0,136.0 -83.1,169.0 -98.7,160.0" fill="#d58a1f" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-177.5,171.5 -172.3,174.5 -172.3,168.5 -177.5,165.5" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-158.5,166.5 -172.3,174.5 -172.3,168.5 -158.5,160.5" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-163.7,157.5 -158.5,160.5 -172.3,168.5 -177.5,165.5" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="110.9,164.0 124.7,172.0 124.7,170.0 110.9,162.0" fill="#1f4f84" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="147.2,159.0 124.7,172.0 124.7,170.0 147.2,157.0" fill="#275f9c" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="133.4,149.0 147.2,157.0 124.7,170.0 110.9,162.0" fill="#2f6fb3" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="123.8,159.5 129.0,162.5 129.0,161.0 123.8,158.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="134.2,159.5 129.0,162.5 129.0,161.0 134.2,158.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="129.0,155.0 134.2,158.0 129.0,161.0 123.8,158.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="129.9,187.0 138.6,192.0 138.6,152.0 129.9,147.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="173.2,172.0 138.6,192.0 138.6,152.0 173.2,132.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="164.5,127.0 173.2,132.0 138.6,152.0 129.9,147.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><ellipse cx="155.9" cy="162.0" rx="12.5" ry="16.0" fill="#555" stroke="#888" stroke-width="0.6" transform="rotate(-30 155.9 162.0)"/><polygon points="-158.5,182.5 -153.3,185.5 -153.3,179.5 -158.5,176.5" fill="#9d2a21" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-139.4,177.5 -153.3,185.5 -153.3,179.5 -139.4,171.5" fill="#b93328" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-144.6,168.5 -139.4,171.5 -153.3,179.5 -158.5,176.5" fill="#d23b2f" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-149.8,187.5 -144.6,190.5 -144.6,184.5 -149.8,181.5" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-130.8,182.5 -144.6,190.5 -144.6,184.5 -130.8,176.5" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-136.0,173.5 -130.8,176.5 -144.6,184.5 -149.8,181.5" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-130.8,198.5 -125.6,201.5 -125.6,195.5 -130.8,192.5" fill="#9d2a21" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-111.7,193.5 -125.6,201.5 -125.6,195.5 -111.7,187.5" fill="#b93328" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-116.9,184.5 -111.7,187.5 -125.6,195.5 -130.8,192.5" fill="#d23b2f" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-122.1,203.5 -116.9,206.5 -116.9,200.5 -122.1,197.5" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-103.1,198.5 -116.9,206.5 -116.9,200.5 -103.1,192.5" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-108.3,189.5 -103.1,192.5 -116.9,200.5 -122.1,197.5" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="132.5,191.5 229.5,247.5 229.5,245.9 132.5,189.9" fill="#b59442" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="324.8,192.5 229.5,247.5 229.5,245.9 324.8,190.9" fill="#c7a653" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="227.8,134.9 324.8,190.9 229.5,245.9 132.5,189.9" fill="#d8b865" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="210.4,149.9 297.0,199.9 297.0,159.9 210.4,109.9" fill="#aab1b7" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="314.4,189.9 297.0,199.9 297.0,159.9 314.4,149.9" fill="#c3c9ce" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="227.8,99.9 314.4,149.9 297.0,159.9 210.4,109.9" fill="#dfe3e6" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><line x1="236.4" y1="104.9" x2="219.1" y2="114.9" stroke="#8a9299" stroke-width="0.8"/><line x1="245.1" y1="109.9" x2="227.8" y2="119.9" stroke="#8a9299" stroke-width="0.8"/><line x1="253.7" y1="114.9" x2="236.4" y2="124.9" stroke="#8a9299" stroke-width="0.8"/><line x1="262.4" y1="119.9" x2="245.1" y2="129.9" stroke="#8a9299" stroke-width="0.8"/><line x1="271.1" y1="124.9" x2="253.7" y2="134.9" stroke="#8a9299" stroke-width="0.8"/><line x1="279.7" y1="129.9" x2="262.4" y2="139.9" stroke="#8a9299" stroke-width="0.8"/><line x1="288.4" y1="134.9" x2="271.1" y2="144.9" stroke="#8a9299" stroke-width="0.8"/><line x1="297.0" y1="139.9" x2="279.7" y2="149.9" stroke="#8a9299" stroke-width="0.8"/><line x1="305.7" y1="144.9" x2="288.4" y2="154.9" stroke="#8a9299" stroke-width="0.8"/><polygon points="199.2,169.4 216.5,179.4 216.5,175.4 199.2,165.4" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="223.4,175.4 216.5,179.4 216.5,175.4 223.4,171.4" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="206.1,161.4 223.4,171.4 216.5,175.4 199.2,165.4" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="213.0,153.0 221.7,158.0 221.7,142.0 213.0,137.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="225.2,156.0 221.7,158.0 221.7,142.0 225.2,140.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="216.5,135.0 225.2,140.0 221.7,142.0 213.0,137.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="233.8,165.0 242.5,170.0 242.5,154.0 233.8,149.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="246.0,168.0 242.5,170.0 242.5,154.0 246.0,152.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="237.3,147.0 246.0,152.0 242.5,154.0 233.8,149.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="254.6,177.0 263.3,182.0 263.3,166.0 254.6,161.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="266.7,180.0 263.3,182.0 263.3,166.0 266.7,164.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="258.1,159.0 266.7,164.0 263.3,166.0 254.6,161.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="275.4,189.0 284.1,194.0 284.1,178.0 275.4,173.0" fill="#222" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="287.5,192.0 284.1,194.0 284.1,178.0 287.5,176.0" fill="#2e2e2e" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="278.9,171.0 287.5,176.0 284.1,178.0 275.4,173.0" fill="#3b3b3b" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="174.9,171.0 194.0,182.0 194.0,173.0 174.9,162.0" fill="#cfc9b8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="202.6,177.0 194.0,182.0 194.0,173.0 202.6,168.0" fill="#e0dbcd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="183.6,157.0 202.6,168.0 194.0,173.0 174.9,162.0" fill="#f2efe6" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="154.2,183.0 173.2,194.0 173.2,185.0 154.2,174.0" fill="#cfc9b8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="181.9,189.0 173.2,194.0 173.2,185.0 181.9,180.0" fill="#e0dbcd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="162.8,169.0 181.9,180.0 173.2,185.0 154.2,174.0" fill="#f2efe6" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="196.6,183.5 215.6,194.5 215.6,185.5 196.6,174.5" fill="#cfc9b8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="224.3,189.5 215.6,194.5 215.6,185.5 224.3,180.5" fill="#e0dbcd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="205.2,169.5 224.3,180.5 215.6,185.5 196.6,174.5" fill="#f2efe6" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="175.8,195.5 194.9,206.5 194.9,197.5 175.8,186.5" fill="#cfc9b8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="203.5,201.5 194.9,206.5 194.9,197.5 203.5,192.5" fill="#e0dbcd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="184.5,181.5 203.5,192.5 194.9,197.5 175.8,186.5" fill="#f2efe6" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="218.2,196.0 237.3,207.0 237.3,198.0 218.2,187.0" fill="#cfc9b8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="246.0,202.0 237.3,207.0 237.3,198.0 246.0,193.0" fill="#e0dbcd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="226.9,182.0 246.0,193.0 237.3,198.0 218.2,187.0" fill="#f2efe6" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="197.5,208.0 216.5,219.0 216.5,210.0 197.5,199.0" fill="#cfc9b8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="225.2,214.0 216.5,219.0 216.5,210.0 225.2,205.0" fill="#e0dbcd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="206.1,194.0 225.2,205.0 216.5,210.0 197.5,199.0" fill="#f2efe6" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="239.9,208.5 258.9,219.5 258.9,210.5 239.9,199.5" fill="#cfc9b8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="267.6,214.5 258.9,219.5 258.9,210.5 267.6,205.5" fill="#e0dbcd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="248.5,194.5 267.6,205.5 258.9,210.5 239.9,199.5" fill="#f2efe6" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="219.1,220.5 238.2,231.5 238.2,222.5 219.1,211.5" fill="#cfc9b8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="246.8,226.5 238.2,231.5 238.2,222.5 246.8,217.5" fill="#e0dbcd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="227.8,206.5 246.8,217.5 238.2,222.5 219.1,211.5" fill="#f2efe6" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-4.3,217.5 95.3,275.0 95.3,273.0 -4.3,215.5" fill="#215c39" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="162.8,236.0 95.3,275.0 95.3,273.0 162.8,234.0" fill="#286b44" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="63.2,176.5 162.8,234.0 95.3,273.0 -4.3,215.5" fill="#2f7d4f" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="27.7,212.0 81.4,243.0 81.4,239.0 27.7,208.0" fill="#0a0f14" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="123.0,219.0 81.4,243.0 81.4,239.0 123.0,215.0" fill="#0d1319" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="69.3,184.0 123.0,215.0 81.4,239.0 27.7,208.0" fill="#101820" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><text x="66.7" y="196.5" font-size="6" fill="#5fe0d6" font-family="JetBrains Mono,monospace" transform="rotate(30 66.7 190.5) skewX(-30) translate(0 0)"></text><polygon points="-18.2,247.5 46.8,285.0 46.8,283.4 -18.2,245.9" fill="#b59442" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="65.8,274.0 46.8,285.0 46.8,283.4 65.8,272.4" fill="#c7a653" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="0.9,234.9 65.8,272.4 46.8,283.4 -18.2,245.9" fill="#d8b865" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-6.9,247.4 3.5,253.4 3.5,246.4 -6.9,240.4" fill="#b9b3a2" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="13.9,247.4 3.5,253.4 3.5,246.4 13.9,240.4" fill="#d1ccbd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="3.5,234.4 13.9,240.4 3.5,246.4 -6.9,240.4" fill="#e8e4d8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="13.9,259.4 24.2,265.4 24.2,258.4 13.9,252.4" fill="#b9b3a2" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="34.6,259.4 24.2,265.4 24.2,258.4 34.6,252.4" fill="#d1ccbd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="24.2,246.4 34.6,252.4 24.2,258.4 13.9,252.4" fill="#e8e4d8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="34.6,271.4 45.0,277.4 45.0,270.4 34.6,264.4" fill="#b9b3a2" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="55.4,271.4 45.0,277.4 45.0,270.4 55.4,264.4" fill="#d1ccbd" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="45.0,258.4 55.4,264.4 45.0,270.4 34.6,264.4" fill="#e8e4d8" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-4.3,12.5 0.0,15.0 0.0,-63.0 -4.3,-65.5" fill="#888" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="4.3,12.5 0.0,15.0 0.0,-63.0 4.3,-65.5" fill="#999" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="0.0,-68.0 4.3,-65.5 0.0,-63.0 -4.3,-65.5" fill="#aaa" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="320.4,200.0 324.8,202.5 324.8,124.5 320.4,122.0" fill="#888" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="329.1,200.0 324.8,202.5 324.8,124.5 329.1,122.0" fill="#999" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="324.8,119.5 329.1,122.0 324.8,124.5 320.4,122.0" fill="#aaa" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-108.3,72.5 -103.9,75.0 -103.9,-3.0 -108.3,-5.5" fill="#888" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-99.6,72.5 -103.9,75.0 -103.9,-3.0 -99.6,-5.5" fill="#999" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="-103.9,-8.0 -99.6,-5.5 -103.9,-3.0 -108.3,-5.5" fill="#aaa" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="216.5,260.0 220.8,262.5 220.8,184.5 216.5,182.0" fill="#888" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="225.2,260.0 220.8,262.5 220.8,184.5 225.2,182.0" fill="#999" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="220.8,179.5 225.2,182.0 220.8,184.5 216.5,182.0" fill="#aaa" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><g opacity="0.33"><polygon points="-119.5,-3.0 216.5,191.0 216.5,188.0 -119.5,-6.0" fill="#7fb8dc" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="336.0,122.0 216.5,191.0 216.5,188.0 336.0,119.0" fill="#8fc6e7" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/><polygon points="0.0,-75.0 336.0,119.0 216.5,188.0 -119.5,-6.0" fill="#9fd3f2" stroke="#1115" stroke-width="0.6" stroke-linejoin="round"/></g><ellipse cx="233.8" cy="84.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="207.8" cy="99.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="181.9" cy="114.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="246.0" cy="91.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="220.0" cy="106.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="194.0" cy="121.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="258.1" cy="98.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="232.1" cy="113.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="206.1" cy="128.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="270.2" cy="105.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="244.2" cy="120.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="218.2" cy="135.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="282.3" cy="112.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="256.3" cy="127.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="230.4" cy="142.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="294.4" cy="119.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="268.5" cy="134.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><ellipse cx="242.5" cy="149.0" rx="4" ry="2.3" fill="none" stroke="#3a7fae" stroke-width="0.7" opacity="0.8"/><line x1="7.8" y1="30.5" x2="-2.2" y2="-29.5" class="lead"/><circle cx="7.8" cy="30.5" r="1.8" class="leaddot"/><circle cx="-2.2" cy="-29.5" r="8" class="badge"/><text x="-2.2" y="-26.2" text-anchor="middle" class="badge-t">1</text><line x1="98.7" y1="64.0" x2="98.7" y2="-6.0" class="lead"/><circle cx="98.7" cy="64.0" r="1.8" class="leaddot"/><circle cx="98.7" cy="-6.0" r="8" class="badge"/><text x="98.7" y="-2.7" text-anchor="middle" class="badge-t">2</text><line x1="77.9" y1="86.0" x2="47.9" y2="46.0" class="lead"/><circle cx="77.9" cy="86.0" r="1.8" class="leaddot"/><circle cx="47.9" cy="46.0" r="8" class="badge"/><text x="47.9" y="49.3" text-anchor="middle" class="badge-t">3</text><line x1="56.3" y1="99.5" x2="26.3" y2="69.5" class="lead"/><circle cx="56.3" cy="99.5" r="1.8" class="leaddot"/><circle cx="26.3" cy="69.5" r="8" class="badge"/><text x="26.3" y="72.8" text-anchor="middle" class="badge-t">4</text><line x1="149.8" y1="119.0" x2="149.8" y2="49.0" class="lead"/><circle cx="149.8" cy="119.0" r="1.8" class="leaddot"/><circle cx="149.8" cy="49.0" r="8" class="badge"/><text x="149.8" y="52.3" text-anchor="middle" class="badge-t">5</text><line x1="82.3" y1="132.5" x2="42.3" y2="122.5" class="lead"/><circle cx="82.3" cy="132.5" r="1.8" class="leaddot"/><circle cx="42.3" cy="122.5" r="8" class="badge"/><text x="42.3" y="125.8" text-anchor="middle" class="badge-t">6</text><line x1="198.3" y1="112.5" x2="203.3" y2="52.5" class="lead"/><circle cx="198.3" cy="112.5" r="1.8" class="leaddot"/><circle cx="203.3" cy="52.5" r="8" class="badge"/><text x="203.3" y="55.8" text-anchor="middle" class="badge-t">7</text><line x1="151.6" y1="139.5" x2="191.6" y2="134.5" class="lead"/><circle cx="151.6" cy="139.5" r="1.8" class="leaddot"/><circle cx="191.6" cy="134.5" r="8" class="badge"/><text x="191.6" y="137.8" text-anchor="middle" class="badge-t">8</text><line x1="228.6" y1="190.4" x2="273.6" y2="200.4" class="lead"/><circle cx="228.6" cy="190.4" r="1.8" class="leaddot"/><circle cx="273.6" cy="200.4" r="8" class="badge"/><text x="273.6" y="203.7" text-anchor="middle" class="badge-t">9</text><line x1="262.4" y1="129.9" x2="272.4" y2="54.9" class="lead"/><circle cx="262.4" cy="129.9" r="1.8" class="leaddot"/><circle cx="272.4" cy="54.9" r="8" class="badge"/><text x="272.4" y="58.2" text-anchor="middle" class="badge-t">10</text><line x1="219.1" y1="138.5" x2="264.1" y2="123.5" class="lead"/><circle cx="219.1" cy="138.5" r="1.8" class="leaddot"/><circle cx="264.1" cy="123.5" r="8" class="badge"/><text x="264.1" y="126.8" text-anchor="middle" class="badge-t">11</text><line x1="211.3" y1="168.4" x2="261.3" y2="173.4" class="lead"/><circle cx="211.3" cy="168.4" r="1.8" class="leaddot"/><circle cx="261.3" cy="173.4" r="8" class="badge"/><text x="261.3" y="176.7" text-anchor="middle" class="badge-t">12</text><line x1="188.8" y1="165.0" x2="233.8" y2="185.0" class="lead"/><circle cx="188.8" cy="165.0" r="1.8" class="leaddot"/><circle cx="233.8" cy="185.0" r="8" class="badge"/><text x="233.8" y="188.3" text-anchor="middle" class="badge-t">13</text><line x1="-145.5" y1="112.0" x2="-190.5" y2="112.0" class="lead"/><circle cx="-145.5" cy="112.0" r="1.8" class="leaddot"/><circle cx="-190.5" cy="112.0" r="8" class="badge"/><text x="-190.5" y="115.3" text-anchor="middle" class="badge-t">14</text><line x1="-145.5" y1="100.0" x2="-185.5" y2="75.0" class="lead"/><circle cx="-145.5" cy="100.0" r="1.8" class="leaddot"/><circle cx="-185.5" cy="75.0" r="8" class="badge"/><text x="-185.5" y="78.3" text-anchor="middle" class="badge-t">15</text><line x1="-204.4" y1="142.0" x2="-224.4" y2="167.0" class="lead"/><circle cx="-204.4" cy="142.0" r="1.8" class="leaddot"/><circle cx="-224.4" cy="167.0" r="8" class="badge"/><text x="-224.4" y="170.3" text-anchor="middle" class="badge-t">16</text><line x1="79.2" y1="224.7" x2="119.2" y2="249.7" class="lead"/><circle cx="79.2" cy="224.7" r="1.8" class="leaddot"/><circle cx="119.2" cy="249.7" r="8" class="badge"/><text x="119.2" y="253.0" text-anchor="middle" class="badge-t">17</text><line x1="23.8" y1="259.1" x2="53.8" y2="289.1" class="lead"/><circle cx="23.8" cy="259.1" r="1.8" class="leaddot"/><circle cx="53.8" cy="289.1" r="8" class="badge"/><text x="53.8" y="292.4" text-anchor="middle" class="badge-t">18</text><text x="-90.9" y="252.5" text-anchor="middle" class="note">перед — до тебе</text><text x="333.4" y="124.5" class="note">кришка (оргскло)</text></svg></div>
+        <figcaption>Ізометрія. Номери — ті самі, що в таблиці нижче. Кришка прозора, щоб бачити, що під нею. Провід: червоний — +5V і заряд, чорний — розряд до силової макетки, бірюзовий — тонкі проводи виміру до Nanit, сірий пунктир — USB Nanit.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Вигляд згори · масштаб</h2>
+      <figure>
+        <div class="viewframe"><svg class="top" viewBox="0 0 900 660" role="img" aria-label="Вигляд згори: розміщення модулів на дошці 400×280 мм"><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3a7fae"/></marker><marker id="tick" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M5 0 V10" stroke="currentColor" stroke-width="1.5"/></marker></defs><rect x="30" y="30" width="800" height="560" rx="6" fill="#d9b98a" stroke="#7a5a30" stroke-width="2"/><rect x="42" y="42" width="776" height="276" rx="4" fill="#9fd3f2" fill-opacity="0.18" stroke="#3a7fae" stroke-width="2" stroke-dasharray="8 5"/><polyline points="2,120 60,120" fill="none" stroke="#222" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" /><polyline points="260,110 286,90" fill="none" stroke="#c0392b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><polyline points="366,196 386,150" fill="none" stroke="#c0392b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><polyline points="366,206 580,270" fill="none" stroke="#c0392b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><polyline points="410,246 410,310 102,330 102,360" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" /><polyline points="110,516 110,530 370,530 430,300 630,286" fill="none" stroke="#2a2a2a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" /><polyline points="118,516 118,524 480,430" fill="none" stroke="#1f8a86" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" /><polyline points="446,246 446,310 166,330 166,360" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" /><polyline points="174,516 174,530 370,526 430,294 630,284" fill="none" stroke="#2a2a2a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" /><polyline points="182,516 182,522 480,438" fill="none" stroke="#1f8a86" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" /><polyline points="482,246 482,310 230,330 230,360" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" /><polyline points="238,516 238,530 370,522 430,288 630,282" fill="none" stroke="#2a2a2a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" /><polyline points="246,516 246,520 480,446" fill="none" stroke="#1f8a86" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" /><polyline points="518,246 518,310 294,330 294,360" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" /><polyline points="302,516 302,530 370,518 430,282 630,280" fill="none" stroke="#2a2a2a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" /><polyline points="310,516 310,518 480,454" fill="none" stroke="#1f8a86" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" /><polyline points="350,218 350,330 494,346" fill="none" stroke="#666" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 3"/><rect x="84" y="546" width="12" height="32" rx="2" fill="#d23b2f" stroke="#1116" stroke-width="1"/><rect x="104" y="546" width="12" height="32" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="148" y="546" width="12" height="32" rx="2" fill="#d23b2f" stroke="#1116" stroke-width="1"/><rect x="168" y="546" width="12" height="32" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="212" y="546" width="12" height="32" rx="2" fill="#d23b2f" stroke="#1116" stroke-width="1"/><rect x="232" y="546" width="12" height="32" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="276" y="546" width="12" height="32" rx="2" fill="#d23b2f" stroke="#1116" stroke-width="1"/><rect x="296" y="546" width="12" height="32" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="80" y="360" width="44" height="156" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="144" y="360" width="44" height="156" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="208" y="360" width="44" height="156" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="272" y="360" width="44" height="156" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="520" y="518" width="150" height="44" rx="2" fill="#d8b865" stroke="#1116" stroke-width="1"/><rect x="386" y="60" width="150" height="110" rx="2" fill="#3a78c9" stroke="#1116" stroke-width="1"/><rect x="394" y="194" width="32" height="52" rx="2" fill="#2f6fb3" stroke="#1116" stroke-width="1"/><rect x="430" y="194" width="32" height="52" rx="2" fill="#2f6fb3" stroke="#1116" stroke-width="1"/><rect x="466" y="194" width="32" height="52" rx="2" fill="#2f6fb3" stroke="#1116" stroke-width="1"/><rect x="502" y="194" width="32" height="52" rx="2" fill="#2f6fb3" stroke="#1116" stroke-width="1"/><rect x="404" y="214" width="12" height="12" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="440" y="214" width="12" height="12" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="476" y="214" width="12" height="12" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="512" y="214" width="12" height="12" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="586" y="60" width="224" height="220" rx="2" fill="#d8b865" stroke="#1116" stroke-width="1"/><rect x="480" y="334" width="230" height="156" rx="2" fill="#2f7d4f" stroke="#1116" stroke-width="1"/><rect x="286" y="126" width="68" height="28" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="622" y="146" width="40" height="16" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="286" y="174" width="80" height="44" rx="2" fill="#e39a3b" stroke="#1116" stroke-width="1"/><rect x="510" y="350" width="124" height="96" rx="2" fill="#101820" stroke="#1116" stroke-width="1"/><rect x="536" y="528" width="24" height="24" rx="2" fill="#e8e4d8" stroke="#1116" stroke-width="1"/><rect x="584" y="528" width="24" height="24" rx="2" fill="#e8e4d8" stroke="#1116" stroke-width="1"/><rect x="632" y="528" width="24" height="24" rx="2" fill="#e8e4d8" stroke="#1116" stroke-width="1"/><rect x="84" y="372" width="36" height="132" rx="2" fill="#2c8a57" stroke="#1116" stroke-width="1"/><rect x="148" y="372" width="36" height="132" rx="2" fill="#c23a6b" stroke="#1116" stroke-width="1"/><rect x="212" y="372" width="36" height="132" rx="2" fill="#3571c4" stroke="#1116" stroke-width="1"/><rect x="276" y="372" width="36" height="132" rx="2" fill="#d58a1f" stroke="#1116" stroke-width="1"/><rect x="286" y="66" width="60" height="44" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="394" y="70" width="30" height="38" rx="2" fill="#2f6fb3" stroke="#1116" stroke-width="1"/><rect x="430" y="70" width="30" height="38" rx="2" fill="#2f6fb3" stroke="#1116" stroke-width="1"/><rect x="466" y="70" width="30" height="38" rx="2" fill="#2f6fb3" stroke="#1116" stroke-width="1"/><rect x="502" y="70" width="30" height="38" rx="2" fill="#2f6fb3" stroke="#1116" stroke-width="1"/><rect x="606" y="182" width="44" height="20" rx="2" fill="#f2efe6" stroke="#1116" stroke-width="1"/><rect x="656" y="182" width="44" height="20" rx="2" fill="#f2efe6" stroke="#1116" stroke-width="1"/><rect x="706" y="182" width="44" height="20" rx="2" fill="#f2efe6" stroke="#1116" stroke-width="1"/><rect x="756" y="182" width="44" height="20" rx="2" fill="#f2efe6" stroke="#1116" stroke-width="1"/><rect x="606" y="230" width="44" height="20" rx="2" fill="#f2efe6" stroke="#1116" stroke-width="1"/><rect x="656" y="230" width="44" height="20" rx="2" fill="#f2efe6" stroke="#1116" stroke-width="1"/><rect x="706" y="230" width="44" height="20" rx="2" fill="#f2efe6" stroke="#1116" stroke-width="1"/><rect x="756" y="230" width="44" height="20" rx="2" fill="#f2efe6" stroke="#1116" stroke-width="1"/><rect x="298" y="76" width="36" height="24" rx="2" fill="#d23b2f" stroke="#1116" stroke-width="1"/><rect x="60" y="60" width="200" height="164" rx="2" fill="#c9ccd0" stroke="#1116" stroke-width="1"/><rect x="610" y="110" width="20" height="8" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="658" y="110" width="20" height="8" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="706" y="110" width="20" height="8" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="754" y="110" width="20" height="8" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="554" y="66" width="20" height="80" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="554" y="174" width="20" height="80" rx="2" fill="#3b3b3b" stroke="#1116" stroke-width="1"/><rect x="596" y="70" width="200" height="40" rx="2" fill="#dfe3e6" stroke="#1116" stroke-width="1"/><line x1="616" y1="70" x2="616" y2="110" stroke="#8a9299"/><line x1="636" y1="70" x2="636" y2="110" stroke="#8a9299"/><line x1="656" y1="70" x2="656" y2="110" stroke="#8a9299"/><line x1="676" y1="70" x2="676" y2="110" stroke="#8a9299"/><line x1="696" y1="70" x2="696" y2="110" stroke="#8a9299"/><line x1="716" y1="70" x2="716" y2="110" stroke="#8a9299"/><line x1="736" y1="70" x2="736" y2="110" stroke="#8a9299"/><line x1="756" y1="70" x2="756" y2="110" stroke="#8a9299"/><line x1="776" y1="70" x2="776" y2="110" stroke="#8a9299"/><text x="820" y="302" text-anchor="end" class="zone" fill="#3a7fae">під кришкою ↑</text><text x="820" y="330" text-anchor="end" class="zone" fill="#7a5a30">відкрита зона ↓</text><path d="M580 106 h110" stroke="#3a7fae" stroke-width="3" fill="none" marker-end="url(#arr)" opacity="0.85"/><path d="M580 214 h110" stroke="#3a7fae" stroke-width="3" fill="none" marker-end="url(#arr)" opacity="0.85"/><path d="M480 266 h55" stroke="#3a7fae" stroke-width="2" fill="none" marker-end="url(#arr)" opacity="0.6" stroke-dasharray="5 4"/><circle cx="160" cy="142" r="11" class="badge"/><text x="160" y="146.5" text-anchor="middle" class="badge-t" style="font-size:13px">1</text><circle cx="316" cy="46" r="11" class="badge"/><text x="316" y="50.5" text-anchor="middle" class="badge-t" style="font-size:13px">2</text><circle cx="370" cy="140" r="11" class="badge"/><text x="370" y="144.5" text-anchor="middle" class="badge-t" style="font-size:13px">3</text><circle cx="326" cy="196" r="11" class="badge"/><text x="326" y="200.5" text-anchor="middle" class="badge-t" style="font-size:13px">4</text><circle cx="460" cy="118" r="11" class="badge"/><text x="460" y="122.5" text-anchor="middle" class="badge-t" style="font-size:13px">5</text><circle cx="456" cy="260" r="11" class="badge"/><text x="456" y="264.5" text-anchor="middle" class="badge-t" style="font-size:13px">6</text><circle cx="564" cy="158" r="11" class="badge"/><text x="564" y="162.5" text-anchor="middle" class="badge-t" style="font-size:13px">7</text><circle cx="564" cy="266" r="11" class="badge"/><text x="564" y="270.5" text-anchor="middle" class="badge-t" style="font-size:13px">8</text><circle cx="796" cy="262" r="11" class="badge"/><text x="796" y="266.5" text-anchor="middle" class="badge-t" style="font-size:13px">9</text><circle cx="696" cy="90" r="11" class="badge"/><text x="696" y="94.5" text-anchor="middle" class="badge-t" style="font-size:13px">10</text><circle cx="626" cy="132" r="11" class="badge"/><text x="626" y="136.5" text-anchor="middle" class="badge-t" style="font-size:13px">11</text><circle cx="680" cy="154" r="11" class="badge"/><text x="680" y="158.5" text-anchor="middle" class="badge-t" style="font-size:13px">12</text><circle cx="790" cy="170" r="11" class="badge"/><text x="790" y="174.5" text-anchor="middle" class="badge-t" style="font-size:13px">13</text><circle cx="60" cy="440" r="11" class="badge"/><text x="60" y="444.5" text-anchor="middle" class="badge-t" style="font-size:13px">14</text><circle cx="198" cy="440" r="11" class="badge"/><text x="198" y="444.5" text-anchor="middle" class="badge-t" style="font-size:13px">15</text><circle cx="50" cy="562" r="11" class="badge"/><text x="50" y="566.5" text-anchor="middle" class="badge-t" style="font-size:13px">16</text><circle cx="670" cy="398" r="11" class="badge"/><text x="670" y="402.5" text-anchor="middle" class="badge-t" style="font-size:13px">17</text><circle cx="700" cy="540" r="11" class="badge"/><text x="700" y="544.5" text-anchor="middle" class="badge-t" style="font-size:13px">18</text><path d="M30 612 H830" stroke="currentColor" stroke-width="1" marker-start="url(#tick)" marker-end="url(#tick)"/><text x="430.0" y="630" text-anchor="middle" class="dim">400 мм</text><path d="M852 30 V590" stroke="currentColor" stroke-width="1" marker-start="url(#tick)" marker-end="url(#tick)"/><text x="860" y="310.0" class="dim" transform="rotate(90 860 310.0)" text-anchor="middle">280 мм</text><text x="26" y="112" text-anchor="end" class="dim" style="font-size:11px">220V</text></svg></div>
+        <figcaption>Сітка деталей у мм. Надрукуй у масштабі 1:1 (400×280 мм — дві А4 або одна А3) і приклей на дошку як шаблон для отворів. Сині стрілки — потік повітря від вентиляторів.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Розріз збоку</h2>
+      <figure>
+        <div class="viewframe"><svg class="side" viewBox="0 0 620 330" role="img" aria-label="Розріз збоку: висоти деталей і кришки"><defs><marker id="tick2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M5 0 V10" stroke="currentColor" stroke-width="1.5"/></marker></defs><rect x="30" y="240" width="560" height="24" fill="#d9b98a" stroke="#1117" stroke-width="1" /><rect x="50" y="264" width="30" height="12" fill="#333" stroke="#1117" stroke-width="1" /><rect x="540" y="264" width="30" height="12" fill="#333" stroke="#1117" stroke-width="1" /><rect x="66" y="160" width="80" height="80" fill="none" stroke="#1117" stroke-width="1" stroke-dasharray="4 3" stroke="#666"/><rect x="66" y="220" width="8" height="20" fill="#bbb" stroke="#1117" stroke-width="1" /><rect x="266" y="220" width="8" height="20" fill="#bbb" stroke="#1117" stroke-width="1" /><rect x="60" y="217" width="220" height="3" fill="#d8b865" stroke="#1117" stroke-width="1" /><rect x="70" y="137" width="40" height="80" fill="#dfe3e6" stroke="#1117" stroke-width="1" /><line x1="78" y1="216.8" x2="78" y2="136.8" stroke="#8a9299"/><line x1="86" y1="216.8" x2="86" y2="136.8" stroke="#8a9299"/><line x1="94" y1="216.8" x2="94" y2="136.8" stroke="#8a9299"/><line x1="102" y1="216.8" x2="102" y2="136.8" stroke="#8a9299"/><rect x="110" y="180" width="8" height="32" fill="#2e2e2e" stroke="#1117" stroke-width="1" /><rect x="182" y="190" width="20" height="18" fill="#e0dbcd" stroke="#1117" stroke-width="1" /><path d="M186 208 V216.8 M198 208 V216.8" stroke="#777" stroke-width="1.5"/><rect x="230" y="190" width="20" height="18" fill="#e0dbcd" stroke="#1117" stroke-width="1" /><path d="M234 208 V216.8 M246 208 V216.8" stroke="#777" stroke-width="1.5"/><rect x="146" y="209" width="16" height="8" fill="#2e2e2e" stroke="#1117" stroke-width="1" /><rect x="50" y="84" width="10" height="156" fill="#999" stroke="#1117" stroke-width="1" /><rect x="290" y="84" width="10" height="156" fill="#999" stroke="#1117" stroke-width="1" /><rect x="42" y="78" width="276" height="6" fill="#9fd3f2" stroke="#1117" stroke-width="1" fill-opacity="0.7" stroke="#3a7fae"/><rect x="360" y="224" width="156" height="16" fill="#2e2e2e" stroke="#1117" stroke-width="1" /><rect x="372" y="200" width="132" height="36" fill="#2d61a8" stroke="#1117" stroke-width="1" rx="8"/><rect x="342" y="220" width="8" height="20" fill="none" stroke="#1117" stroke-width="1" stroke-dasharray="3 2" stroke="#888"/><rect x="474" y="220" width="8" height="20" fill="none" stroke="#1117" stroke-width="1" stroke-dasharray="3 2" stroke="#888"/><rect x="334" y="216" width="156" height="4" fill="none" stroke="#1117" stroke-width="1" stroke-dasharray="4 3" stroke="#2f7d4f" stroke-width="1.5"/><rect x="518" y="224" width="6" height="16" fill="#bbb" stroke="#1117" stroke-width="1" /><rect x="518" y="221" width="44" height="3" fill="#d8b865" stroke="#1117" stroke-width="1" /><rect x="528" y="207" width="24" height="14" fill="#e8e4d8" stroke="#1117" stroke-width="1" /><rect x="546" y="228" width="32" height="12" fill="#d23b2f" stroke="#1117" stroke-width="1" /><line x1="90" y1="136.8" x2="90" y2="104" class="lead"/><circle cx="90" cy="136.8" r="2" class="leaddot"/><text x="94" y="108" text-anchor="start" class="note">радіатор + IRL540N</text><line x1="192" y1="190" x2="192" y2="120" class="lead"/><circle cx="192" cy="190" r="2" class="leaddot"/><text x="196" y="124" text-anchor="start" class="note">резистори 5W на ніжках</text><line x1="270" y1="230" x2="274" y2="290" class="lead"/><circle cx="270" cy="230" r="2" class="leaddot"/><text x="278" y="294" text-anchor="start" class="note">стійка М3×10</text><line x1="106" y1="236" x2="70" y2="290" class="lead"/><circle cx="106" cy="236" r="2" class="leaddot"/><text x="74" y="294" text-anchor="start" class="note">вентилятор (за розрізом)</text><line x1="430" y1="200" x2="430" y2="120" class="lead"/><circle cx="430" cy="200" r="2" class="leaddot"/><text x="434" y="124" text-anchor="start" class="note">акумулятор у тримачі</text><line x1="346" y1="218" x2="350" y2="150" class="lead"/><circle cx="346" cy="218" r="2" class="leaddot"/><text x="346" y="154" text-anchor="end" class="note">Nanit на стійках (за розрізом)</text><line x1="540" y1="206.8" x2="554" y2="160" class="lead"/><circle cx="540" cy="206.8" r="2" class="leaddot"/><text x="558" y="164" text-anchor="start" class="note">кнопки</text><text x="170" y="70" text-anchor="middle" class="note">оргскло 3 мм на 4 шпильках М4</text><path d="M322 240 V84" stroke="currentColor" marker-start="url(#tick2)" marker-end="url(#tick2)"/><text x="328" y="98" class="dim">≈80 мм</text><text x="30" y="324" class="dim">← зад</text><text x="590" y="324" text-anchor="end" class="dim">перед (відкрито) →</text></svg></div>
+        <figcaption>Розріз через силову зону й тримач. Найвищі деталі — вентилятори 40 мм і радіатор на макетці (≈ 52 мм). Кришка на 78 мм дає ~25 мм повітря над ними.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Що і як кріпити</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>№</th><th>Деталь</th><th>Розмір, мм</th><th>Кріплення</th></tr></thead>
+          <tbody>
+            <tr><td class="mono"><span class="bdg">1</span></td><td>Блок живлення 5V 6A</td><td class="mono">≈100×82×30</td><td>2 гвинти в дно блока (М3/М4) або 2 металеві скоби. Мережеві клеми — лише під пластиковою кришкою</td></tr>
+            <tr><td class="mono"><span class="bdg">2</span></td><td>Вимикач 6 A</td><td class="mono">≈30×22</td><td>Врізаний у дерев'яний брусок / куточок, згодом — у бокову стінку кришки</td></tr>
+            <tr><td class="mono"><span class="bdg">3</span></td><td>Тримач запобіжника 5 A</td><td class="mono">≈34×14</td><td>2 шурупи 2.5×10</td></tr>
+            <tr><td class="mono"><span class="bdg">4</span></td><td>Клемник шини +5V / GND</td><td class="mono">≈40×22</td><td>WAGO 221 на тримачі з шурупом або клемна колодка</td></tr>
+            <tr><td class="mono"><span class="bdg">5</span></td><td>Модуль реле 4 кан.</td><td class="mono">≈75×55</td><td>4 стійки М3×8 мм</td></tr>
+            <tr><td class="mono"><span class="bdg">6</span></td><td>4 × TP4056</td><td class="mono">26×17 кожна</td><td>Двосторонній скотч або термоклей на спільній смужці макетки. Перед вентилятором 8</td></tr>
+            <tr><td class="mono"><span class="bdg">7</span></td><td>Вентилятор A 40 мм</td><td class="mono">40×40×10</td><td>Стоїть на куточку, дме вздовж ребер радіатора</td></tr>
+            <tr><td class="mono"><span class="bdg">8</span></td><td>Вентилятор B 40 мм</td><td class="mono">40×40×10</td><td>Стоїть на куточку, дме над резисторами, втягує повітря через зону TP4056</td></tr>
+            <tr><td class="mono"><span class="bdg">9</span></td><td>Силова макетка</td><td class="mono">≈110×110</td><td>Стійки М3×10 — під платою мають пройти проводи й повітря</td></tr>
+            <tr><td class="mono"><span class="bdg">10</span></td><td>Радіатор 100×40×20</td><td class="mono">—</td><td>Лежить ребрами вгору вздовж заднього краю макетки</td></tr>
+            <tr><td class="mono"><span class="bdg">11</span></td><td>4 × IRL540N</td><td class="mono">TO-220</td><td>На радіаторі через ізолюючі прокладки й втулки</td></tr>
+            <tr><td class="mono"><span class="bdg">12</span></td><td>LM324 + фільтри ШІМ</td><td class="mono">DIP-14</td><td>Панелька на макетці</td></tr>
+            <tr><td class="mono"><span class="bdg">13</span></td><td>Шунти + баласти 1Ω 5W</td><td class="mono">22×10 ×8</td><td>Підняті на ніжках 4–5 мм над макеткою</td></tr>
+            <tr><td class="mono"><span class="bdg">14</span></td><td>4 тримачі 18650</td><td class="mono">≈78×22</td><td>2 шурупи 2.5×10 кожен, відстань між ними 10 мм</td></tr>
+            <tr><td class="mono"><span class="bdg">15</span></td><td>Акумулятори + NTC</td><td class="mono">18650</td><td>NTC притиснутий до корпусу акумулятора (скотч / силіконове кільце)</td></tr>
+            <tr><td class="mono"><span class="bdg">16</span></td><td>Крокодили</td><td class="mono">дроти 18AWG</td><td>Виходять спереду, паркуються на гачку / магніті</td></tr>
+            <tr><td class="mono"><span class="bdg">17</span></td><td>Nanit Pro</td><td class="mono">≈115×78 (виміряй)</td><td>4 стійки М3×10 або кутова рамка; тумблер ON</td></tr>
+            <tr><td class="mono"><span class="bdg">18</span></td><td>Кнопки ◀ OK ▶</td><td class="mono">смужка макетки</td><td>Стійки М3×8 під Nanit</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Чому саме так</h2>
+      <div class="cols">
+        <div>
+          <h3>Зони</h3>
+          <ul>
+            <li><b>Зад-ліво</b> — 220 V: мережевий шнур заходить збоку просто в блок, до рук далеко.</li>
+            <li><b>Зад-право</b> — усе, що гріється (радіатор, резистори), під кришкою з обдувом, далеко від акумуляторів.</li>
+            <li><b>Середина</b> — реле і TP4056 між живленням і тримачами: короткі товсті проводи заряду.</li>
+            <li><b>Перед</b> — те, до чого торкаєшся: акумулятори, крокодили, екран, кнопки.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Проводи</h3>
+          <ul>
+            <li>Товсті (18AWG) — живлення, заряд, розряд. Тонкі — вимір V, NTC, сигнали.</li>
+            <li>Тонкі проводи виміру йдуть окремо від товстих, до Nanit — вздовж переднього краю.</li>
+            <li>Пучки — стяжки на самоклеючих площадках. Під макетками стійки 10 мм — там теж можна вести проводи.</li>
+            <li>Кожен провід підпиши (CH1…CH4) шматочком малярного скотчу.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Кришка</h2>
+      <ol class="checklist">
+        <li><span class="num">1</span><span>Лист оргскла (акрилу) 3 мм, ≈ 390×140 мм — ріже будь-яка майстерня або ножем по оргсклу за кілька проходів.</span></li>
+        <li><span class="num">2</span><span>4 шпильки М4 × 100 мм (або стійки М4 80 мм) у кутах задньої зони, знизу — гайка з шайбою під дошкою.</span></li>
+        <li><span class="num">3</span><span>Над радіатором і резисторами просвердли 15–20 отворів Ø8 мм — туди виходить тепле повітря.</span></li>
+        <li><span class="num">4</span><span>Боки лишаються відкритими для притоку повітря. Лівий бік біля блока закрий смужкою фанери, щоб не торкнутися 220 V клем.</span></li>
+        <li><span class="num">5</span><span>Вимикач (2) і запобіжник (3) згодом можна перенести на цю бокову смужку — тоді вони під рукою.</span></li>
+      </ol>
+      <p class="warn"><b>220 V:</b> клеми L/N блока — лише під його рідною пластиковою кришкою або обмотані й закриті. Шнур закріпи хомутом до дошки, щоб його не можна було висмикнути з клем.</p>
+    </section>
+
+    <section>
+      <h2>Докупити для корпусу</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Що</th><th>Скільки</th><th>Навіщо</th></tr></thead>
+          <tbody>
+            <tr><td>Фанера / МДФ 10–12 мм</td><td class="mono">400×280</td><td>Основа</td></tr>
+            <tr><td>Оргскло 3 мм</td><td class="mono">390×140</td><td>Кришка задньої зони</td></tr>
+            <tr><td>Шпильки М4 + гайки + шайби</td><td class="mono">4 компл.</td><td>Опори кришки</td></tr>
+            <tr><td>Стійки М3 × 8–10 мм + гвинти</td><td class="mono">≈ 20 шт.</td><td>Реле, макетки, Nanit, кнопки</td></tr>
+            <tr><td>Шурупи 2.5×10 і 3×12</td><td class="mono">≈ 30 шт.</td><td>Тримачі, блок, клемник</td></tr>
+            <tr><td>Меблевий куточок 20×20</td><td class="mono">2</td><td>Вентилятори стоячи</td></tr>
+            <tr><td>Гумові ніжки</td><td class="mono">4</td><td>Щоб гвинти знизу не дряпали стіл</td></tr>
+            <tr><td>Стяжки + самоклеючі площадки</td><td class="mono">≈ 20</td><td>Пучки проводів</td></tr>
+            <tr><td>Хомут для шнура (кабельна скоба)</td><td class="mono">1</td><td>Мережевий шнур</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Порядок з фазами</h2>
+      <p style="margin:0;max-width:74ch">Спершу розмітка й отвори на дошці, потім деталі ставляться по фазах: фаза 1 — блок, вимикач, запобіжник, клемник, Nanit. Кожна наступна фаза додає свій модуль на вже розмічене місце. Кришку ставиш наприкінці, коли все перевірено. Розміри Nanit і блока в тебе можуть відрізнятися — поміряй і посунь.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span>battery-tester-4ch · компонування</span>
+    <span>схеми: schematics.html · збирання: build.html</span>
+  </footer>
+</div>
+</body>
+</html>
