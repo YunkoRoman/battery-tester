@@ -301,6 +301,7 @@
         <li><span class="num">7</span><span><a href="#s7">Реле і зарядка каналу 1</a></span></li>
         <li><span class="num">8</span><span><a href="#s8">Вентилятор</a></span></li>
         <li><span class="num">9</span><span><a href="#s9">Канали 2–4</a> — повторити етапи 3, 5, 6, 7</span></li>
+        <li><span class="num">10</span><span><a href="#service">Перевірки в сервісному режимі</a></span></li>
       </ol>
       <div class="warn"><b>Загальні правила:</b> силові кола (струм до 1 A) — силіконовий провід 18AWG, коротко, пайка; сигнальні — тонкий провід. Запобіжник ставиться до першого увімкнення. Паяй при вимкненому головному вимикачі й без акумуляторів. Тумблер Nanit — завжди увімкнений: Li-Po працює як резерв.</div>
     </section>
@@ -327,8 +328,22 @@
             <path d="M256 80 H720" stroke="var(--power)" stroke-width="4"/>
             <text x="300" y="68" style="fill:var(--power);font-weight:600">+5V шина</text>
             <path d="M130 160 H720" stroke="currentColor" stroke-width="4"/>
-            <text x="300" y="184" style="font-weight:600">GND шина</text>
-            <text x="470" y="124" text-anchor="middle" class="lbl">далі від шин: реле (7) · LM324 (4) · вентилятор (8)</text>
+            <text x="300" y="150" style="font-weight:600">GND шина</text>
+            <text x="170" y="192" class="lbl">далі від шин: реле (7) · LM324 (4) · вентилятор (8)</text>
+            <circle class="dotp" cx="540" cy="80" r="4"/>
+            <path class="wp" d="M540 80 V88"/>
+            <rect class="part" x="531" y="88" width="18" height="26" rx="2"/>
+            <circle class="dots" cx="540" cy="120" r="3.5"/>
+            <path class="w" d="M540 114 V128"/>
+            <rect class="part" x="531" y="128" width="18" height="26" rx="2"/>
+            <path class="w" d="M540 154 V160"/>
+            <circle class="dot" cx="540" cy="160" r="4"/>
+            <text x="526" y="106" text-anchor="end" class="lbl">10k</text>
+            <text x="526" y="146" text-anchor="end" class="lbl">10k</text>
+            <path class="ws" d="M540 120 H600"/>
+            <circle cx="600" cy="120" r="4" fill="var(--gate)"/>
+            <text x="592" y="222" text-anchor="end" class="lbl" style="fill:var(--gate)">середина → A7 · P1_1 (NO POWER)</text>
+            <path class="ws" d="M600 120 V214" stroke-dasharray="3 3"/>
             <circle class="dotp" cx="630" cy="80" r="4"/>
             <path class="wp" d="M630 80 V108 H660"/>
             <circle class="dot" cx="645" cy="160" r="4"/>
@@ -336,16 +351,17 @@
             <rect x="660" y="95" width="80" height="60" rx="4" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
             <text x="700" y="120" text-anchor="middle" style="font-weight:600">USB</text>
             <text x="700" y="138" text-anchor="middle" class="lbl">→ Nanit</text>
-            <text x="690" y="210" text-anchor="middle" class="lbl">тумблер Nanit — ON</text>
+            <text x="745" y="222" text-anchor="end" class="lbl">тумблер Nanit — ON</text>
           </svg>
         </div>
       </figure>
-      <p class="parts"><b>Деталі:</b> блок 5V 6A, вимикач 6 A, тримач запобіжника + 5 A, 2 клемники (шина +5V і GND), USB-кабель (з боку блоку — лише червоний 5V і чорний GND).</p>
+      <p class="parts"><b>Деталі:</b> блок 5V 6A, вимикач 6 A, тримач запобіжника + 5 A, 2 клемники (шина +5V і GND), USB-кабель (з боку блоку — лише червоний 5V і чорний GND), 2 × 10 kΩ (дільник шини → A7).</p>
       <ol class="checklist">
         <li><span class="num">1</span><span>Блок → вимикач → запобіжник → клемник +5V. Мінус блоку → клемник GND. Провід 18AWG.</span></li>
         <li><span class="num">2</span><span>USB-кабель: розріж, червоний у +5V, чорний у GND, білий і зелений заізолюй.</span></li>
+        <li><span class="num">3</span><span>Дільник 10k/10k між +5V і GND, середня точка тонким проводом → A7 (P1_1). Так прошивка бачить, що блок вимкнено (NO POWER).</span></li>
       </ol>
-      <p class="check"><b>Перевірка:</b> вимикач OFF — на шині 0 V. ON — між +5V і GND 5.0–5.2 V. Nanit вмикається від USB.</p>
+      <p class="check"><b>Перевірка:</b> вимикач OFF — на шині 0 V. ON — між +5V і GND 5.0–5.2 V. Nanit вмикається від USB. Середня точка дільника ↔ GND ≈ 2.5 V.</p>
     </section>
 
     <!-- ===================== 2 ===================== -->
@@ -784,6 +800,24 @@
         </table>
       </div>
       <p class="check"><b>Перевірка:</b> ті самі перевірки, що в етапах 3, 5, 6, 7 — для кожного каналу окремо. Усі 4 MOSFET на спільному радіаторі: опір між будь-якими двома фланцями = ∞.</p>
+    </section>
+    <section id="service">
+      <h2>Перевірки в сервісному режимі</h2>
+      <p style="margin:0 0 14px;max-width:70ch">Утримуй OK під час увімкнення — відкриється SERVICE MODE. ◀ ▶ — вибір рядка, OK — перемикає вихід рядка (OFF → RELAY → LOAD 0.20 A → OFF; останній рядок — вентилятор). Утримання OK — вихід, усі виходи вимикаються.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Етап</th><th>Що дивитися на екрані</th><th>Норма</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">1</td><td>BUS у нижньому рядку</td><td>4.9–5.2 V; вимикач OFF — на звичайних екранах NO POWER</td></tr>
+            <tr><td class="mono">2</td><td>◀ ▶ рухають виділення рядка</td><td>кожна кнопка реагує на одне натискання</td></tr>
+            <tr><td class="mono">3</td><td>V свого каналу</td><td>= мультиметру на клемах ±0.02 V; без акумулятора 0.00</td></tr>
+            <tr><td class="mono">4–5</td><td>LOAD на своєму каналі, I</td><td>0.18–0.22 A; мультиметр на шунті 0.18–0.22 V</td></tr>
+            <tr><td class="mono">6</td><td>T свого каналу</td><td>кімнатна ±3 °C; «--» = NTC не підключений</td></tr>
+            <tr><td class="mono">7</td><td>RELAY на своєму каналі, символ D</td><td>реле клацає, червоний LED TP4056; D з'являється, коли акумулятор повний</td></tr>
+            <tr><td class="mono">8</td><td>рядок FAN → OK</td><td>вентилятор вмикається / вимикається</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
   </main>
 

@@ -588,7 +588,8 @@
             <tr><td>Вентилятори</td><td class="mono">D10 · P9_4</td><td>ШІМ → 220Ω → затвор IRL540N (5-й), діод 1N5819 паралельно вентилятору</td></tr>
             <tr><td>NTC_PWR</td><td class="mono">D31 · P3_4</td><td>HIGH під час вимірювання температури</td></tr>
             <tr><td>Батарея Nanit</td><td class="mono">A15 (вбудовано)</td><td><code>getBatteryVoltage()</code> з NanitLib</td></tr>
-            <tr><td>Запас</td><td class="mono">A6, A7, D7, D8 (P1); D32, D34, D36</td><td>на майбутнє</td></tr>
+            <tr><td>Шина 5V (NO POWER)</td><td class="mono">A7 · P1_1</td><td>дільник 10k/10k від +5V шини</td></tr>
+            <tr><td>Запас</td><td class="mono">D7, D8 (P1); D32, D34, D36</td><td>A6 (P1_2) не використовувати — NanitLib вмикає на ньому підтяжку при старті</td></tr>
           </tbody>
         </table>
       </div>
@@ -641,7 +642,7 @@
             <text x="4" y="57" font-size="7" fill="#fff">  MODE      FULL</text>
             <text x="4" y="71" font-size="7" fill="#7ee08a">  START</text>
             <text x="4" y="85" font-size="7" fill="#fff">  BACK</text>
-            <text x="3" y="122" font-size="6" fill="#7c868c">&lt; &gt; change   OK next</text>
+            <text x="3" y="122" font-size="6" fill="#7c868c">&lt; &gt; move   OK edit</text>
           </svg>
           <figcaption>Налаштування: струм, cutoff, режим</figcaption>
         </figure>
@@ -656,7 +657,7 @@
           </tbody>
         </table>
       </div>
-      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">Шрифт дисплея (Adafruit GFX) не має кирилиці — написи на екрані латиницею. Налаштування кожного каналу зберігаються в EEPROM і не губляться після вимкнення.</p>
+      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">Шрифт дисплея (Adafruit GFX) не має кирилиці — написи на екрані латиницею. Налаштування кожного каналу зберігаються в EEPROM і не губляться після вимкнення. Кнопки: ◀ ▶ — вибір / зміна значення, OK — відкрити / редагувати / підтвердити, утримання OK — назад на головний. Утримання OK при увімкненні — сервісний режим.</p>
     </section>
 
     <section>
@@ -682,7 +683,7 @@
             <tr><td class="mono" style="color:var(--power)">SAG</td><td>Під навантаженням падає нижче cutoff раніше ніж за 5 хв</td><td>Зупиняє розряд — сильне просідання</td></tr>
             <tr><td class="mono" style="color:var(--power)">HOT</td><td>T &gt; 45 °C на заряді або &gt; 55 °C на розряді</td><td>Вимикає і заряд, і розряд каналу</td></tr>
             <tr><td class="mono" style="color:var(--power)">CHG TIMEOUT</td><td>Заряд довше 4 год</td><td>Вимикає зарядку — акумулятор не тримає заряд</td></tr>
-            <tr><td class="mono" style="color:var(--power)">NO POWER</td><td>Задано струм, а шунт показує 0 (блок 5V вимкнений)</td><td>Пауза всіх каналів, дані зберігаються; продовження після увімкнення блоку</td></tr>
+            <tr><td class="mono" style="color:var(--power)">NO POWER</td><td>Напруга шини 5V &lt; 4.5 V (дільник на A7)</td><td>Пауза всіх каналів, дані зберігаються; продовження після увімкнення блоку</td></tr>
             <tr><td class="mono" style="color:var(--power)">REMOVED</td><td>Під час роботи V &lt; 0.5 V</td><td>Зупиняє канал</td></tr>
           </tbody>
         </table>
