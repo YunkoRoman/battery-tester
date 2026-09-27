@@ -12,6 +12,10 @@ Successor of the 1-channel prototype in `../battery-capacity-tester` (kept uncha
 
 Power: 5V 6A PSU → master switch → 5A fuse → +5V/GND bus. Nanit runs from the bus over USB; its own Li-Po (switch ON) is a backup. Master switch off ⇒ relays open, LM324 unpowered, gates pulled low; firmware shows NO POWER and pauses.
 
+## Phases
+
+Built and flashed one circuit at a time: branch `phase_N` = firmware for build stage(s) of that phase (table in `README.md`). Each phase branch starts from the previous one and adds only the code its stage needs; `firmware` holds the complete firmware. Don't flash a phase's firmware onto hardware from a later phase without checking the pin usage.
+
 ## Design Log
 
 After every change that touches the circuit, pin assignments, firmware architecture, or toolchain setup — component value changes, new channels, new libraries, build/IDE config fixes — update `design-log/`:
