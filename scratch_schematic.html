@@ -1,0 +1,562 @@
+<title>Розрядна Схема</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --paper:#f4efe4;
+    --paper-raised:#faf6ec;
+    --ink:#2a251d;
+    --ink-soft:#5a5347;
+    --rule:#d8cdb6;
+    --rule-strong:#b7a98a;
+    --power:#a3211f;
+    --gnd:#2a251d;
+    --gate:#c1631f;
+    --sense:#1f6e6b;
+    --tag-bg:#ece2c9;
+    --code-bg:#eee5cf;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1c1a15;
+      --paper-raised:#242019;
+      --ink:#f1ead9;
+      --ink-soft:#b6ab93;
+      --rule:#4a4334;
+      --rule-strong:#6b6146;
+      --power:#e2695f;
+      --gnd:#f1ead9;
+      --gate:#e8a85e;
+      --sense:#6bc2bd;
+      --tag-bg:#332c1f;
+      --code-bg:#2b2519;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1c1a15;
+    --paper-raised:#242019;
+    --ink:#f1ead9;
+    --ink-soft:#b6ab93;
+    --rule:#4a4334;
+    --rule-strong:#6b6146;
+    --power:#e2695f;
+    --gnd:#f1ead9;
+    --gate:#e8a85e;
+    --sense:#6bc2bd;
+    --tag-bg:#332c1f;
+    --code-bg:#2b2519;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Archivo',system-ui,sans-serif;
+    padding-inline:20px;
+    padding-block:48px;
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-attachment:local;
+  }
+  .sheet{
+    max-width:920px;
+    margin-inline:auto;
+    background:var(--paper-raised);
+    border:1px solid var(--rule-strong);
+    box-shadow:0 1px 0 var(--rule-strong);
+  }
+  header{
+    padding:28px 32px 22px;
+    border-bottom:2px solid var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .title-block h1{
+    margin:0;
+    font-size:clamp(1.5rem, 3vw, 2.1rem);
+    font-weight:800;
+    letter-spacing:-0.01em;
+    text-wrap:balance;
+  }
+  .title-block p{
+    margin:4px 0 0;
+    color:var(--ink-soft);
+    font-size:0.95rem;
+    max-width:60ch;
+  }
+  .drawing-no{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:var(--ink-soft);
+    text-align:right;
+    line-height:1.6;
+  }
+  .drawing-no b{ color:var(--ink); font-weight:600; }
+
+  main{ padding:28px 32px 36px; }
+
+  section{ margin-block-end:40px; }
+  section:last-child{ margin-block-end:0; }
+
+  h2{
+    font-size:0.78rem;
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--rule);
+  }
+
+  figure{ margin:0; }
+  .schem-frame{
+    background:var(--paper);
+    border:1px solid var(--rule-strong);
+    padding:12px;
+  }
+  svg{ display:block; width:100%; height:auto; color:var(--ink); }
+
+  .schem-frame{ overflow-x:auto; }
+  svg.schem{ min-width:620px; }
+  svg.schem text{ font-family:'JetBrains Mono',monospace; font-size:13px; fill:var(--ink); }
+  svg.schem .lbl{ fill:var(--ink-soft); font-size:12px; }
+  svg.schem .w{ stroke:currentColor; stroke-width:2; fill:none; }
+  svg.schem .wp{ stroke:var(--power); stroke-width:2; fill:none; }
+  svg.schem .ws{ stroke:var(--gate); stroke-width:2; fill:none; }
+  svg.schem .part{ fill:var(--paper-raised); stroke:currentColor; stroke-width:2; }
+  svg.schem .dot{ fill:currentColor; }
+  svg.schem .dotp{ fill:var(--power); }
+  svg.schem .dots{ fill:var(--gate); }
+
+  .to220{ display:grid; grid-template-columns:200px 1fr; gap:24px; align-items:center; }
+  svg.to220-svg{ max-width:200px; }
+  svg.to220-svg text{ font-family:'JetBrains Mono',monospace; fill:var(--ink); }
+  svg.to220-svg .t-sm{ font-size:11px; fill:var(--ink-soft); }
+  svg.to220-svg .t-part{ font-size:14px; font-weight:700; }
+  svg.to220-svg .t-pin{ font-size:16px; font-weight:700; }
+  @media (max-width:640px){ .to220{ grid-template-columns:1fr; } }
+  figcaption{
+    margin-top:10px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    max-width:70ch;
+  }
+
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 22px;
+    margin-top:14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .legend i{ width:18px; height:3px; display:inline-block; border-radius:1px; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.88rem;
+  }
+  caption{ text-align:left; margin-bottom:8px; }
+  th, td{
+    text-align:left;
+    padding:9px 12px;
+    border-bottom:1px solid var(--rule);
+    vertical-align:top;
+  }
+  th{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+    border-bottom:1px solid var(--rule-strong);
+  }
+  td.mono, .pin{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85rem;
+  }
+  .tbl-wrap{ overflow-x:auto; }
+
+  .pinmap{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--rule-strong);
+    border:1px solid var(--rule-strong);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.82rem;
+  }
+  .pinmap > div{
+    background:var(--paper-raised);
+    padding:12px 14px;
+  }
+  .pinmap .head{
+    background:var(--tag-bg);
+    font-size:0.7rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  .pinmap .port{ font-weight:700; }
+  .pinmap .gate{ color:var(--gate); }
+  .pinmap .sense{ color:var(--sense); }
+
+  .checklist{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .checklist li{
+    display:flex; gap:12px; align-items:flex-start;
+    font-size:0.92rem; line-height:1.5;
+  }
+  .checklist .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    color:var(--paper-raised);
+    background:var(--ink);
+    width:22px; height:22px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+
+  .warn{
+    margin-top:16px;
+    padding:12px 14px;
+    background:var(--tag-bg);
+    border-left:3px solid var(--power);
+    font-size:0.85rem;
+    line-height:1.5;
+  }
+  .warn b{ color:var(--power); }
+
+  code{
+    font-family:'JetBrains Mono',monospace;
+    background:var(--code-bg);
+    padding:0.1em 0.4em;
+    border-radius:3px;
+    font-size:0.92em;
+  }
+
+  footer{
+    padding:16px 32px 26px;
+    border-top:1px solid var(--rule);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width:640px){
+    .pinmap{ grid-template-columns:1fr; }
+    header{ flex-direction:column; align-items:flex-start; }
+    .drawing-no{ text-align:left; }
+  }
+</style>
+
+<div class="sheet">
+  <header>
+    <div class="title-block">
+      <h1>Тестер ємності 18650 — канал 1</h1>
+      <p>MOSFET-розряд на Nanit Pro (ATmega2560). Керування розрядом і зчитування напруги через сигнальні піни адаптерних роз'ємів.</p>
+    </div>
+    <div class="drawing-no">
+      РОЗРОБКА <b>battery-capacity-tester</b><br>
+      ПЛАТА <b>Nanit Pro v3.1</b><br>
+      РЕВ <b>07</b>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Принципова схема</h2>
+      <figure>
+        <div class="schem-frame">
+          <svg class="schem" viewBox="0 0 760 420" role="img" aria-label="Схема: батарея 18650, резистор 10 Ом, MOSFET IRL540N, затвор через 220 Ом від P5_1, підтяжка 10 кОм до GND, вимір напруги на P10_2 через 10 кОм з підтяжкою 10 кОм до GND">
+        <!-- + rail -->
+        <path class="wp" d="M90 210 V100 H480"/>
+        <rect class="part" x="480" y="91" width="60" height="18" rx="2"/>
+        <path class="wp" d="M540 100 H600"/>
+        <text x="510" y="84" text-anchor="middle">R5</text>
+        <text x="510" y="128" text-anchor="middle" class="lbl">10kΩ</text>
+        <path class="wp" d="M300 100 V120"/>
+        <circle class="dotp" cx="300" cy="100" r="4"/>
+        <!-- battery -->
+        <line x1="66" y1="210" x2="114" y2="210" stroke="var(--power)" stroke-width="3"/>
+        <line x1="78" y1="222" x2="102" y2="222" stroke="currentColor" stroke-width="5"/>
+        <line x1="66" y1="234" x2="114" y2="234" stroke="var(--power)" stroke-width="3"/>
+        <line x1="78" y1="246" x2="102" y2="246" stroke="currentColor" stroke-width="5"/>
+        <text x="122" y="214" style="fill:var(--power)">+</text>
+        <text x="122" y="252">−</text>
+        <text x="20" y="232">18650</text>
+        <text x="20" y="250" class="lbl">DUT</text>
+        <!-- load resistor -->
+        <rect class="part" x="289" y="120" width="22" height="70" rx="2"/>
+        <text x="322" y="150">R1</text>
+        <text x="322" y="167" class="lbl">3×10Ω ∥ = 3.3Ω</text>
+        <!-- MOSFET -->
+        <path class="w" d="M300 190 V228 H308"/>
+        <line x1="308" y1="221" x2="308" y2="235" stroke="currentColor" stroke-width="3"/>
+        <line x1="308" y1="238" x2="308" y2="252" stroke="currentColor" stroke-width="3"/>
+        <line x1="308" y1="255" x2="308" y2="269" stroke="currentColor" stroke-width="3"/>
+        <line x1="318" y1="221" x2="318" y2="269" stroke="currentColor" stroke-width="2"/>
+        <path class="w" d="M308 262 H300 V360"/>
+        <path class="w" d="M300 245 H306"/>
+        <path d="M307 245 L299 240 L299 250 Z" fill="currentColor"/>
+        <text x="312" y="305">Q1</text>
+        <text x="312" y="322" class="lbl">IRL540N</text>
+        <text x="292" y="214" text-anchor="end" class="lbl">D · стік</text>
+        <text x="292" y="286" text-anchor="end" class="lbl">S · витік</text>
+        <text x="326" y="237" style="fill:var(--gate);font-weight:600">G</text>
+        <text x="545" y="237" text-anchor="middle" class="lbl" style="fill:var(--gate)">gate</text>
+        <!-- gate drive -->
+        <path class="ws" d="M318 245 H380"/>
+        <rect class="part" x="380" y="236" width="60" height="18" rx="2"/>
+        <text x="388" y="228">R2</text>
+        <text x="388" y="274" class="lbl">220Ω</text>
+        <path class="ws" d="M440 245 H600"/>
+        <circle class="dots" cx="490" cy="245" r="4"/>
+        <path class="w" d="M490 245 V285"/>
+        <rect class="part" x="481" y="285" width="18" height="50" rx="2"/>
+        <path class="w" d="M490 335 V360"/>
+        <text x="508" y="306">R3</text>
+        <text x="508" y="323" class="lbl">10kΩ</text>
+        <!-- R4: A0 pull-down (no battery -> 0 V) -->
+        <path class="w" d="M200 100 V205"/>
+        <rect class="part" x="191" y="205" width="18" height="50" rx="2"/>
+        <path class="w" d="M200 255 V360"/>
+        <circle class="dotp" cx="200" cy="100" r="4"/>
+        <circle class="dot" cx="200" cy="360" r="4"/>
+        <text x="186" y="226" text-anchor="end">R4</text>
+        <text x="186" y="243" text-anchor="end" class="lbl">10kΩ</text>
+        <!-- GND rail -->
+        <path class="w" d="M90 246 V360 H600"/>
+        <circle class="dot" cx="300" cy="360" r="4"/>
+        <circle class="dot" cx="490" cy="360" r="4"/>
+        <!-- Nanit board -->
+        <rect x="600" y="62" width="144" height="330" rx="10" fill="var(--tag-bg)" stroke="var(--rule-strong)" stroke-width="2"/>
+        <text x="614" y="84" style="font-weight:500">Nanit Pro</text>
+        <circle cx="600" cy="100" r="4" fill="var(--gate)"/>
+        <circle cx="600" cy="245" r="4" fill="var(--gate)"/>
+        <circle cx="600" cy="360" r="4" fill="var(--gate)"/>
+        <text x="614" y="104">P10_2</text>
+        <text x="614" y="121" class="lbl">A0 · sense</text>
+        <text x="614" y="249">P5_1</text>
+        <text x="614" y="266" class="lbl">D2 · gate</text>
+        <text x="614" y="364">GND</text>
+        <text x="614" y="381" class="lbl">спільна</text>
+      </svg>
+        </div>
+        <figcaption>Розрядне навантаження R1 — три резистори 10 Ом/10 Вт паралельно = 3.33 Ом (I ≈ 1.26 A при 4.2 В, ≈ 1.1 A при 3.7 В, ≈ 0.9 A при 3.0 В; кожен резистор розсіює до 1.76 Вт, разом до 5.3 Вт). Розряд керується сигналом <code>P5_1</code> (вихід D2) через резистор 220 Ом на затвор IRL540N, з підтяжкою 10 кОм до землі. Напруга акумулятора під тестом читається напряму на <code>P10_2</code> (A0). R4 (10 кОм) тягне лінію до землі, коли акумулятора немає, — інакше вхід висить у повітрі й АЦП читає шум. R5 (10 кОм) послідовно перед A0 не дає акумулятору живити плату через захисний діод входу, коли тумблер Nanit вимкнений. Мінус акумулятора, витік MOSFET і GND адаптерного роз'єму об'єднані спільною шиною.</figcaption>
+        <div class="legend">
+          <span><i style="background:var(--power)"></i>живлення (+4.2 В)</span>
+          <span><i style="background:currentColor"></i>земля / GND</span>
+          <span><i style="background:var(--gate)"></i>керування затвором</span>
+        </div>
+      </figure>
+      <div class="warn"><b>Увага:</b> живлення розрядного кола — окремий акумулятор 18650, НЕ вбудована батарея Nanit Pro. Адаптерні роз'єми тут використані лише як сигнальні лінії (Signal) — живлення від порту (3.7 В) не підключається.</div>
+      <div class="warn"><b>Тумблер Nanit:</b> без R5 «+» акумулятора напряму на A0 живить плату через захисний діод входу, коли тумблер вимкнений, — мікроконтролер може працювати на заниженій напрузі й не закрити MOSFET. З R5 струм обмежений до ≈ 0.3 мА: плата не стартує, R3 тримає затвор у LOW, розряд зупиняється.</div>
+    </section>
+
+    <section>
+      <h2>Розводка на макетці · силове коло і вимір окремо</h2>
+      <figure>
+        <div class="schem-frame">
+          <svg class="schem" viewBox="0 0 760 420" role="img" aria-label="Розводка: силове коло від плюса акумулятора через R1 і MOSFET до мінуса акумулятора товстими короткими проводами; окремі тонкі проводи вимірювання від торців акумулятора до P10_2 і GND Nanit; R4 між ними; затвор від P5_1 через R2, R3 до GND вимірювального проводу">
+            <!-- battery holder -->
+            <rect x="270" y="110" width="60" height="180" rx="6" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
+            <rect x="285" y="96" width="30" height="14" fill="var(--power)"/>
+            <rect x="285" y="290" width="30" height="14" fill="currentColor"/>
+            <text x="300" y="196" text-anchor="middle" style="font-weight:600">18650</text>
+            <text x="300" y="214" text-anchor="middle" class="lbl">тримач</text>
+            <text x="300" y="134" text-anchor="middle" style="fill:var(--power);font-weight:700">+</text>
+            <text x="300" y="280" text-anchor="middle" style="font-weight:700">−</text>
+
+            <!-- power loop: + -> R1 -> Q1 -> - (thick) -->
+            <path d="M300 96 V60 H80 V90" stroke="var(--power)" stroke-width="5" fill="none" stroke-linejoin="round"/>
+            <rect class="part" x="68" y="90" width="24" height="70" rx="2"/>
+            <text x="102" y="120">R1</text>
+            <text x="102" y="137" class="lbl">3×10Ω ∥ = 3.3Ω</text>
+            <path d="M80 160 V200" stroke="var(--power)" stroke-width="5" fill="none"/>
+            <rect x="50" y="200" width="60" height="70" rx="3" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+            <text x="80" y="232" text-anchor="middle" style="font-weight:600">Q1</text>
+            <text x="80" y="250" text-anchor="middle" class="lbl">IRL540N</text>
+            <text x="86" y="214" class="lbl">D</text>
+            <text x="86" y="266" class="lbl">S</text>
+            <path d="M80 270 V330 H300 V304" stroke="currentColor" stroke-width="5" fill="none" stroke-linejoin="round"/>
+            <text x="190" y="48" text-anchor="middle" style="fill:var(--power);font-weight:600">силове коло ≈ 1.1 A</text>
+            <text x="190" y="352" text-anchor="middle" class="lbl">короткі товсті проводи, без рейок макетки</text>
+
+            <!-- sense wires: straight from the cell's terminals (thin) -->
+            <path d="M315 103 H530" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <rect class="part" x="530" y="94" width="50" height="18" rx="2"/>
+            <path d="M580 103 H600" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <text x="555" y="86" text-anchor="middle">R5</text>
+            <text x="555" y="130" text-anchor="middle" class="lbl">10kΩ</text>
+            <path d="M315 297 H600" stroke="var(--sense)" stroke-width="2" fill="none"/>
+            <text x="420" y="92" text-anchor="middle" style="fill:var(--sense);font-weight:600">вимір: окремі проводи</text>
+            <text x="430" y="287" text-anchor="middle" class="lbl" style="fill:var(--sense)">прямо з торців АКБ</text>
+            <circle cx="315" cy="103" r="4" fill="var(--sense)"/>
+            <circle cx="315" cy="297" r="4" fill="var(--sense)"/>
+
+            <!-- R4 on the sense pair -->
+            <path d="M500 103 V170" class="w"/>
+            <rect class="part" x="491" y="170" width="18" height="60" rx="2"/>
+            <path d="M500 230 V297" class="w"/>
+            <circle class="dot" cx="500" cy="103" r="4"/>
+            <circle class="dot" cx="500" cy="297" r="4"/>
+            <text x="516" y="196">R4</text>
+            <text x="516" y="213" class="lbl">10kΩ</text>
+
+            <!-- gate drive -->
+            <path d="M600 370 H420" class="ws"/>
+            <rect class="part" x="360" y="361" width="60" height="18" rx="2"/>
+            <text x="390" y="398" text-anchor="middle">R2 <tspan class="lbl">220Ω</tspan></text>
+            <path d="M360 370 H30 V235 H50" class="ws"/>
+            <text x="38" y="228" class="lbl" style="fill:var(--gate)">G</text>
+            <circle class="dots" cx="470" cy="370" r="4"/>
+            <path d="M470 370 V352" class="w"/>
+            <rect class="part" x="461" y="314" width="18" height="38" rx="2" transform="translate(0 0)"/>
+            <path d="M470 314 V297" class="w"/>
+            <circle class="dot" cx="470" cy="297" r="4"/>
+            <text x="486" y="338">R3 <tspan class="lbl">10kΩ</tspan></text>
+
+            <!-- Nanit -->
+            <rect x="600" y="40" width="144" height="360" rx="10" fill="var(--tag-bg)" stroke="var(--rule-strong)" stroke-width="2"/>
+            <text x="614" y="64" style="font-weight:500">Nanit Pro</text>
+            <circle cx="600" cy="103" r="4" fill="var(--gate)"/>
+            <circle cx="600" cy="297" r="4" fill="var(--gate)"/>
+            <circle cx="600" cy="370" r="4" fill="var(--gate)"/>
+            <text x="614" y="107">P10_2</text>
+            <text x="614" y="124" class="lbl">A0 · sense</text>
+            <text x="614" y="301">GND</text>
+            <text x="614" y="318" class="lbl">сенс-земля</text>
+            <text x="614" y="374">P5_1</text>
+            <text x="614" y="391" class="lbl">D2 · gate</text>
+          </svg>
+        </div>
+        <figcaption>Та сама схема, але розведена так, щоб падіння напруги в контактах макетки не потрапляло у вимір. Струм навантаження йде лише замкненим силовим колом «+» → R1 → Q1 → «−». Проводи до P10_2 і GND Nanit беруться окремо прямо з торців акумулятора — по них тече лише ≈ 0.4 мА через R4, тому A0 бачить справжню напругу на акумуляторі.</figcaption>
+        <div class="legend">
+          <span><i style="background:var(--power);height:5px"></i>силове коло, «+»</span>
+          <span><i style="background:currentColor;height:5px"></i>силове коло, повернення</span>
+          <span><i style="background:var(--sense)"></i>провід виміру</span>
+          <span><i style="background:var(--gate)"></i>керування затвором</span>
+        </div>
+      </figure>
+      <div class="warn"><b>Не роби так:</b> підключати P10_2 і GND Nanit до тих самих рейок макетки, по яких іде струм R1 і MOSFET. Тоді A0 бачить напругу акумулятора мінус падіння на контактах (при ~1.1 A кожні 0.1 Ом контакту — це мінус 0.11 В), і розряд може вимкнутися по cutoff одразу після старту.</div>
+    </section>
+
+    <section>
+      <h2>Перелік компонентів</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Поз.</th><th>Компонент</th><th>Номінал</th><th>Роль у схемі</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono">R1</td><td>Силовий резистор, керамічний</td><td class="mono">3 × 10 Ω/10 Вт паралельно = 3.33 Ω</td><td>Розрядне навантаження, I ≈ 1.26 A (4.2 В) … 0.9 A (3.0 В), P ≤ 1.76 Вт на кожен</td></tr>
+            <tr><td class="mono">R2</td><td>Резистор</td><td class="mono">220 Ω, 0.25 Вт</td><td>Обмеження струму заряду затвора</td></tr>
+            <tr><td class="mono">R3</td><td>Резистор</td><td class="mono">10 kΩ, 0.25 Вт</td><td>Підтяжка затвора до GND (захист від хибного відкриття)</td></tr>
+            <tr><td class="mono">R4</td><td>Резистор</td><td class="mono">10 kΩ, 0.25 Вт</td><td>Підтяжка A0 до GND: без акумулятора 0 В замість шуму. Бере з акумулятора ≈ 0.4 мА — прошивка додає цей струм до ємності</td></tr>
+            <tr><td class="mono">R5</td><td>Резистор</td><td class="mono">10 kΩ, 0.25 Вт</td><td>Послідовно в лінії A0. Коли Nanit вимкнений, обмежує струм з акумулятора в плату до ≈ 0.3 мА — плата не живиться від тестованого акумулятора</td></tr>
+            <tr><td class="mono">Q1</td><td>N-MOSFET, logic-level</td><td class="mono">IRL540N (TO-220)</td><td>Керований ключ розряду</td></tr>
+            <tr><td class="mono">BT1</td><td>Тримач 18650</td><td class="mono">KS18650x1-THM</td><td>Акумулятор під тестом</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Підключення до адаптерних роз'ємів</h2>
+      <div class="pinmap">
+        <div class="head">Роз'єм</div><div class="head">Сигнал</div><div class="head">Йде до</div>
+        <div class="port">P5_1</div><div class="gate">D2 (Signal)</div><div>R2 → Gate (Q1)</div>
+        <div class="port">P10_2</div><div class="sense">A0 (Signal)</div><div>R5 (10 kΩ) → Battery +; R4 → GND на боці акумулятора</div>
+        <div class="port">будь-який</div><div>GND</div><div>Спільна шина: Battery −, Source (Q1), R3, R4</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Розпіновка Q1 · IRL540N (TO-220)</h2>
+      <div class="to220">
+        <svg class="to220-svg" viewBox="0 0 220 250" role="img" aria-label="Корпус TO-220 написом до себе, ніжками вниз: ліва ніжка G (затвор), середня D (стік), права S (витік); фланець з'єднаний зі стоком">
+          <rect x="50" y="10" width="120" height="60" rx="4" fill="var(--tag-bg)" stroke="currentColor" stroke-width="2"/>
+          <circle cx="110" cy="38" r="12" fill="var(--paper)" stroke="currentColor" stroke-width="2"/>
+          <text x="110" y="62" text-anchor="middle" class="t-sm">фланець = D</text>
+          <rect x="50" y="70" width="120" height="80" fill="var(--paper-raised)" stroke="currentColor" stroke-width="2"/>
+          <text x="110" y="108" text-anchor="middle" class="t-part">IRL540N</text>
+          <text x="110" y="126" text-anchor="middle" class="t-sm">написом до себе</text>
+          <line x1="75" y1="150" x2="75" y2="210" stroke="var(--gate)" stroke-width="5"/>
+          <line x1="110" y1="150" x2="110" y2="210" stroke="var(--power)" stroke-width="5"/>
+          <line x1="145" y1="150" x2="145" y2="210" stroke="currentColor" stroke-width="5"/>
+          <text x="75" y="232" text-anchor="middle" class="t-pin" style="fill:var(--gate)">G</text>
+          <text x="110" y="232" text-anchor="middle" class="t-pin" style="fill:var(--power)">D</text>
+          <text x="145" y="232" text-anchor="middle" class="t-pin">S</text>
+        </svg>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>Ніжка</th><th>Вивід</th><th>Підключення</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ліва</td><td class="mono" style="color:var(--gate)">G · затвор</td><td>R2 (220 Ω) → P5_1; R3 (10 kΩ) → GND</td></tr>
+              <tr><td>середня</td><td class="mono" style="color:var(--power)">D · стік</td><td>R1 (3 × 10 Ω паралельно) → Battery +</td></tr>
+              <tr><td>права</td><td class="mono">S · витік</td><td>GND: Battery −, GND роз'єму Nanit</td></tr>
+              <tr><td>фланець</td><td class="mono" style="color:var(--power)">D · стік</td><td>Електрично = середня ніжка</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="warn"><b>Увага:</b> металевий фланець з'єднаний зі стоком. Якщо він торкнеться GND, навантаження R1 увімкнеться напряму, в обхід MOSFET, і розряд не зупиниться по cutoff. На схемі затвор намальований праворуч лише для зручності розведення — на корпусі це <b>ліва</b> ніжка.</div>
+    </section>
+
+    <section>
+      <h2>Порядок збирання</h2>
+      <ol class="checklist">
+        <li><span class="num">1</span>Спаяй/встав R2 (220 Ω) між затвором Q1 (ліва ніжка) і сигнальним піном P5_1.</li>
+        <li><span class="num">2</span>Встав R3 (10 kΩ) між затвором Q1 і спільною землею — тримай його максимально близько до затвора.</li>
+        <li><span class="num">3</span>Спаяй три резистори 10 Ω/10 Вт паралельно (R1): одні кінці разом, інші кінці разом, між корпусами — зазор ≥ 5 мм. Стік Q1 (середня ніжка) з'єднай через R1 з плюсом тримача 18650. Силові проводи — AWG20–22, тільки пайка. Кожен резистор гріється до 1.76 Вт, разом до 5.3 Вт — тримай їх подалі від пластику й плати.</li>
+        <li><span class="num">4</span>Витік Q1 (права ніжка) з'єднай напряму зі спільною землею (GND роз'єму + мінус акумулятора).</li>
+        <li><span class="num">5</span>Плюс акумулятора продублюй окремим провідником на P10_2 (A0) — для вимірювання напруги. Біля акумулятора встав R4 (10 kΩ) на GND, а між цією точкою і P10_2 — R5 (10 kΩ) послідовно.</li>
+        <li><span class="num">6</span>Перевір мультиметром: без сигналу на P5_1 (LOW) — Q1 закритий, струму через R1 нема. Без акумулятора на P10_2 має бути 0 В.</li>
+        <li><span class="num">7</span>Калібрування R_LOAD: без акумулятора виміряй опір R1 (≈ 3.3 Ω). Потім амперметр (гніздо 10A) послідовно в силове коло, запусти розряд і одночасно запиши V на торцях акумулятора та I. <code>R_LOAD = V / I</code> — впиши в прошивку.</li>
+        <li><span class="num">8</span><span>Залий прошивку (<code>battery_tester.cpp</code> + <code>display.cpp</code>) — розряд стартує автоматично при напрузі вище 3.0 В, хід тесту видно на TFT.</span></li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Логіка прошивки</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Стан на TFT</th><th>Умова</th><th>Що відбувається</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono" style="color:var(--power)">NO BATTERY</td><td>Напруга &lt; 0.5 В</td><td>Акумулятор не вставлено. P5_1 = LOW</td></tr>
+            <tr><td class="mono">IDLE</td><td>Акумулятор є, напруга ≤ 3.0 В або йде підтвердження старту</td><td>P5_1 = LOW, Q1 закритий</td></tr>
+            <tr><td class="mono" style="color:var(--gate)">DISCHARGING</td><td>3 вимірювання поспіль &gt; 3.0 В</td><td>P5_1 = HIGH. Раз на 1 с: I = V / R_LOAD (3.25 Ω, калібровано) + V / 10 kΩ, ємність += I / 3600 (мА·год), таймер +1 с</td></tr>
+            <tr><td class="mono" style="color:var(--sense)">DONE</td><td>5 вимірювань поспіль ≤ 3.0 В</td><td>P5_1 = LOW, результат фіксується. Повторний старт — лише після RESET плати, навіть якщо напруга відновиться</td></tr>
+            <tr><td class="mono" style="color:var(--power)">BATT REMOVED</td><td>Під час розряду напруга &lt; 0.5 В</td><td>Акумулятор вийняли: P5_1 = LOW, тест перервано, зафіксовано до RESET. Набрана ємність лишається на екрані</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:12px 0 0;font-size:0.85rem;color:var(--ink-soft);max-width:70ch">На вбудованому TFT 160×128: статус, напруга (В), струм (мА), ємність (мА·год), час розряду hh:mm:ss. Ті самі дані дублюються в Serial 9600.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span>battery-capacity-tester · канал 1 · Nanit Pro v3.1</span>
+    <span>джерело пінів: nanit_pro_board (пам'ять проєкту)</span>
+  </footer>
+</div>
